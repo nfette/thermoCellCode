@@ -30,19 +30,22 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
+
 from __future__ import division, unicode_literals, print_function, absolute_import
+
 import visa
+
 def test_keithley2000(monkeypatch):
-monkeypatch.setattr(visa.GpibInstrument, 'interface_type', VI_INTF_GPIB)
-monkeypatch.setattr(visa.GpibInstrument, 'stb', 0x40)
-print("Test start")
-keithley = visa.GpibInstrument(12)
-milliseconds = 500
-number_of_values = 10
-keithley.write(("F0B2M2G0T2Q%dI%dX" % (milliseconds, number_of_values)).encode('ascii'))
-keithley.trigger()
-keithley.wait_for_srq()
-voltages = keithley.read_floats()
-if voltages:
-print("Average: ", sum(voltages) / len(voltages))
-print("Test end")
+    monkeypatch.setattr(visa.GpibInstrument, 'interface_type', VI_INTF_GPIB)
+    monkeypatch.setattr(visa.GpibInstrument, 'stb', 0x40)
+    print("Test start")
+    keithley = visa.GpibInstrument(12)
+    milliseconds = 500
+    number_of_values = 10
+    keithley.write(("F0B2M2G0T2Q%dI%dX" % (milliseconds, number_of_values)).encode('ascii'))
+    keithley.trigger()
+    keithley.wait_for_srq()
+    voltages = keithley.read_floats()
+    if voltages:
+        print("Average: ", sum(voltages) / len(voltages))
+    print("Test end")
