@@ -90,9 +90,9 @@ def main(r_tested_nominal, outputPickle, outputPlot):
 
 if __name__ == "__main__":
     # ohms
-    r_tested_nominal = 10
-    outputPickle = "data/calibration/rs500/{:02}ohm.pkl".format(r_tested_nominal)
-    outputPlot = "data/calibration/rs500/{:02}ohm.png".format(r_tested_nominal)
+    r_tested_nominal = 11
+    outputPickle = "data/calibration/1ohmBreadboard/parallelx{:02}.pkl".format(r_tested_nominal)
+    outputPlot = "data/calibration/1ohmBreadboard/parallelx{:02}.png".format(r_tested_nominal)
     main(r_tested_nominal, outputPickle, outputPlot)
 
     
