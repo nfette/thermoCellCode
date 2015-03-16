@@ -15,14 +15,17 @@ import os
 import siteDefs
 
 programFilename = 'cr23x_programs/wind_tunnel_8channels.scw'
-outputFilename = siteDefs.data_base_dir + "myoutputs.dat"
+timeStamp = datetime.datetime.now()
+timeStampStr = timeStamp.isoformat().replace(':','=')
+basename = "myoutputs"
+outputFilename = "{}{}{}.dat".format(siteDefs.data_base_dir, basename, timeStampStr)
 port = 'com3'
 
 if not os.path.isfile(outputFilename):
     with open(outputFilename,'w') as f:
         labels = libcr23x.getLabels(programFilename)
         labels = ['TimeStamp']+labels
-        f.write(','.join(labels))
+        f.write(','.join(labels) + '\n')
 
 with serial.Serial(port=port, baudrate=9600,
                    timeout=2, writeTimeout=2) as ser,\
@@ -72,7 +75,8 @@ with serial.Serial(port=port, baudrate=9600,
         for n in range(100):
             print "Tx hey what are the numbers now?"
             ser.write('K\r')
-            d = ser.read(58)
+            expectedBytes = 58
+            d = ser.read(expectedBytes)
             dhex = binascii.hexlify(d)
             #print " ".join(dhex[2*i:(2*i+2)] for i in range(58))
             # now we must parse this per appendix C of cr23x manual
