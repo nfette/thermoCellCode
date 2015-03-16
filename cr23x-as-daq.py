@@ -12,9 +12,10 @@ import binascii
 import string
 import libcr23x
 import os
+import siteDefs
 
-programFilename = 'wind_tunnel_8channels.scw'
-outputFilename = 'myoutputs.dat'
+programFilename = 'cr23x_programs/wind_tunnel_8channels.scw'
+outputFilename = siteDefs.data_base_dir + "myoutputs.dat"
 port = 'com3'
 
 if not os.path.isfile(outputFilename):
