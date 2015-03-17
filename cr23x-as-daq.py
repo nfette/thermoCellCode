@@ -24,6 +24,7 @@ port = 'com3'
 if not os.path.isfile(outputFilename):
     with open(outputFilename,'w') as f:
         labels = libcr23x.getLabels(programFilename)
+        nlocs = len(labels)
         labels = ['TimeStamp']+labels
         f.write(','.join(labels) + '\n')
 
@@ -57,7 +58,7 @@ with serial.Serial(port=port, baudrate=9600,
         ser.write('2413J\r')
         j1 = ser.read(8)
         print j1
-        ser.write('\x00\x60\x00\x00\x00')
+        ser.write(libcr23x.Jcommand_header + chr(0))
         j2 = ser.read(5)
         print binascii.hexlify(j2)
         ser.write('K\r')
@@ -67,23 +68,29 @@ with serial.Serial(port=port, baudrate=9600,
         ser.write('2413J\r')
         j4 = ser.read(8)
         print j4
-        ser.write(binascii.unhexlify(
-            string.replace('00 60 00 00 01 02 03 04 05 06 07 08 09 0A 0B 00',' ','')))
-        j5 = ser.read(16)
+        # TODO: This should depend on the number of input locations in the program
+        Jcommand_locations = ''.join(map(chr, range(1,1+nlocs)))
+        Jcommand = libcr23x.Jcommand_header + Jcommand_locations + chr(0);
+        ser.write(Jcommand)
+        # Confirmation
+        j5 = ser.read(len(Jcommand))
         print binascii.hexlify(j5)
         
-        for n in range(100):
-            print "Tx hey what are the numbers now?"
-            ser.write('K\r')
-            expectedBytes = 58
-            d = ser.read(expectedBytes)
-            dhex = binascii.hexlify(d)
-            #print " ".join(dhex[2*i:(2*i+2)] for i in range(58))
-            # now we must parse this per appendix C of cr23x manual
-            t,data3 = libcr23x.translateK(d)
-            data4 = [t.isoformat()]+map(str,data3)
-            f.write(','.join(data4) + '\n')
-            time.sleep(1)
+        try:
+            for n in range(100):
+                print "Tx hey what are the numbers now?"
+                ser.write('K\r')
+                expectedBytes = libcr23x.calcKmessageLength(nlocs) # eg 58 for 11 fields
+                d = ser.read(expectedBytes)
+                dhex = binascii.hexlify(d)
+                #print " ".join(dhex[2*i:(2*i+2)] for i in range(58))
+                # now we must parse this per appendix C of cr23x manual
+                t,data3 = libcr23x.translateK(d, nlocs)
+                data4 = [t.isoformat()]+map(str,data3)
+                f.write(','.join(data4) + '\n')
+                time.sleep(0.8)
+        except KeyboardInterrupt:
+            pass
         
         print "Tx let's finish"
         ser.write('E')

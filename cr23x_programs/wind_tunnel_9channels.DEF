@@ -1,7 +1,7 @@
 3/16/2015
-17:27:27
+17:08:39
 Created by Short Cut (3.0)
-Short Cut Program:  wind_tunnel_8channels.DEF
+Short Cut Program:  wind_tunnel_9channels.DEF
 
 -Wiring for CR23X-
 
@@ -37,6 +37,11 @@ Short Cut Program:  wind_tunnel_8channels.DEF
     8H:  Yellow
     8L:  Red
 
+  Single Ended Voltage
+    Ground:  Ground
+    Ground:  Shield
+    9H:  Signal
+
 -Measurement Labels-
 
   Default Measurements
@@ -69,6 +74,9 @@ Short Cut Program:  wind_tunnel_8channels.DEF
 
   Type K (chromel-alumel) Thermocouple (8)
     11  T_amb_2
+
+  Single Ended Voltage
+    12  SEVolt
 
 101 Output_Table   1.00 Min
 1 101 L

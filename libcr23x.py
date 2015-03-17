@@ -11,6 +11,14 @@ import struct
 import datetime
 import xml.etree.ElementTree as ET
 
+K_headfmt = '>xxxHHBBB'
+K_tailfmt = 'xxH'
+K_headerlength = struct.calcsize(K_headfmt) # 10
+K_footerlength = struct.calcsize(K_tailfmt) # 4
+K_eachfmt = '<L'
+K_eachlength = struct.calcsize(K_eachfmt) # 4
+Jcommand_header = '\x00\x60\x00\x00'
+
 def convertFromCSIFPF(bytes):
     isNegative = 0x80 & bytes[0]
     sign = -1. if isNegative else 1.
@@ -21,28 +29,37 @@ def convertFromCSIFPF(bytes):
     result = sign * mantissa * pow(2,exponent)
     return result
 
-def translateK(msg):
+def calcKmessageLength(nlocs):
+    return K_headerlength + nlocs * K_eachlength + K_footerlength
+
+def translateK(msg, nlocs=-1):
     length = len(msg)
-    headerlength = 10
-    footerlength = 4
-    datalength = length - headerlength - footerlength
-    nlocs = datalength / 4
-    headfmt = '>xxxHHBBB'
-    datafmt = '<' + str(nlocs) + 'L'
+
+    datalength = length - (K_headerlength + K_footerlength)
+    nlocsExpected = datalength / 4
     # check if the message is the correct length?
-    tailfmt = 'xxH'
-    header = struct.unpack(headfmt,msg[0:headerlength])
-    data1 = bytearray(msg[headerlength:headerlength+datalength])
-    tail = struct.unpack(tailfmt,msg[headerlength+datalength:])
+    if nlocs < 0:
+        nlocs = nlocsExpected
+    else:
+        if nlocs != nlocsExpected:
+            raise Exception("CR23x K command: expected different number of fields")
+    datafmt = '<{}L'.format(nlocs)
     
+    header = struct.unpack(K_headfmt,msg[0:K_headerlength])
+    data1 = bytearray(msg[K_headerlength:K_headerlength+datalength])
+    tail = struct.unpack(K_tailfmt,msg[K_headerlength+datalength:])
+    
+    # oddly, the time stamp in the message header does not include date.
     timeHours = header[0] / 60
     timeMins = header[0] % 60
     timeSecs = header[1] / 10
     timeMicros = 100000 * (header[1] % 10)
     t = datetime.time(hour=timeHours, minute=timeMins, second=timeSecs, microsecond=timeMicros)
+    # I just throw out the rest of the header
     flags1to8 = header[2]
     ports = header[3]
     flags11to18 = header[4]
+    # Now the actual fields
     data2 = [data1[4*i:4*i+4] for i in range(nlocs)]
     data3 = map(convertFromCSIFPF, data2)
     
@@ -64,7 +81,7 @@ def getLabels(filenameSCW):
     return labels
 
 def testGetLabels():
-    programFilename = 'wind_tunnel_8channels.scw'
+    programFilename = 'cr23x_programs/wind_tunnel_8channels.scw'
     labels = getLabels(programFilename)
     print labels
     

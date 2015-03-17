@@ -7,7 +7,7 @@
     </arrayids>
     <CreatedByDate></CreatedByDate>
     <CreatedByVersion></CreatedByVersion>
-    <IntermediateStorage>0</IntermediateStorage>
+    <IntermediateStorage>158</IntermediateStorage>
     <inlocstringlist>
       <string>1,BattV,0,0,0,0</string>
       <string>2,ProgSig,0,0,0,0</string>
@@ -20,8 +20,9 @@
       <string>9,T_c_dry,0,0,0,0</string>
       <string>10,T_amb_1,0,0,0,0</string>
       <string>11,T_amb_2,0,0,0,0</string>
+      <string>12,SEVolt,0,0,0,0</string>
     </inlocstringlist>
-    <Modified>False</Modified>
+    <Modified>True</Modified>
     <storagerates>
       <string>1</string>
       <string>1440</string>
@@ -1171,7 +1172,7 @@
         </connectorattributes>
       </connector>
       <connector>
-        <Consumed>0</Consumed>
+        <Consumed>0.5</Consumed>
         <StripNumber>0</StripNumber>
         <TerminalName>Ground</TerminalName>
         <UsedFor>0</UsedFor>
@@ -1180,7 +1181,38 @@
         <partner>-1</partner>
         <pref_ground>-1</pref_ground>
         <partner_type>-1</partner_type>
-        <connectorattributes/>
+        <connectorattributes>
+          <connectorattribute>
+            <CalledBy>100</CalledBy>
+            <ConsumedPercent>25</ConsumedPercent>
+            <GPLabel></GPLabel>
+            <Handle>SEGround</Handle>
+            <JumperID>0</JumperID>
+            <SensorID>11</SensorID>
+            <SensorName>VoltsSE</SensorName>
+            <WireCaption></WireCaption>
+            <WireColor>Ground</WireColor>
+            <SensorGroup></SensorGroup>
+            <ConnectorGroup></ConnectorGroup>
+            <ChannelType>6</ChannelType>
+            <AllowWireMove>True</AllowWireMove>
+          </connectorattribute>
+          <connectorattribute>
+            <CalledBy>100</CalledBy>
+            <ConsumedPercent>25</ConsumedPercent>
+            <GPLabel></GPLabel>
+            <Handle>SE_Shield</Handle>
+            <JumperID>0</JumperID>
+            <SensorID>11</SensorID>
+            <SensorName>VoltsSE</SensorName>
+            <WireCaption></WireCaption>
+            <WireColor>Shield</WireColor>
+            <SensorGroup></SensorGroup>
+            <ConnectorGroup></ConnectorGroup>
+            <ChannelType>6</ChannelType>
+            <AllowWireMove>True</AllowWireMove>
+          </connectorattribute>
+        </connectorattributes>
       </connector>
       <connector>
         <Consumed>1</Consumed>
@@ -1659,7 +1691,7 @@
         <connectorattributes/>
       </connector>
       <connector>
-        <Consumed>0</Consumed>
+        <Consumed>1</Consumed>
         <StripNumber>1</StripNumber>
         <TerminalName>9H</TerminalName>
         <UsedFor>0</UsedFor>
@@ -1668,7 +1700,23 @@
         <partner>-1</partner>
         <pref_ground>-1</pref_ground>
         <partner_type>-1</partner_type>
-        <connectorattributes/>
+        <connectorattributes>
+          <connectorattribute>
+            <CalledBy>100</CalledBy>
+            <ConsumedPercent>100</ConsumedPercent>
+            <GPLabel></GPLabel>
+            <Handle>SEV_Chan</Handle>
+            <JumperID>0</JumperID>
+            <SensorID>11</SensorID>
+            <SensorName>VoltsSE</SensorName>
+            <WireCaption></WireCaption>
+            <WireColor>Signal</WireColor>
+            <SensorGroup></SensorGroup>
+            <ConnectorGroup></ConnectorGroup>
+            <ChannelType>0</ChannelType>
+            <AllowWireMove>True</AllowWireMove>
+          </connectorattribute>
+        </connectorattributes>
       </connector>
       <connector>
         <Consumed>0</Consumed>
@@ -2452,6 +2500,25 @@
                 <Options>Value Only,Value with Seconds,Value with Hr-Min,Value with Hr-Min-Sec</Options>
                 <OptionsIndex>1</OptionsIndex>
               </TComboAttribute>
+              <TImmutableIntegerAttribute>
+                <AltLongSensorName></AltLongSensorName>
+                <AltShortSensorName></AltShortSensorName>
+                <Caption></Caption>
+                <Handle>MaxOption</Handle>
+                <HelpContext>0</HelpContext>
+                <TypeTag>0</TypeTag>
+                <ValidOutPuts></ValidOutPuts>
+                <Value>0</Value>
+                <Units></Units>
+                <UnitsIndex>0</UnitsIndex>
+                <ActiveUnits></ActiveUnits>
+                <Enabled>True</Enabled>
+                <UserHidden>False</UserHidden>
+                <ShowInForm>False</ShowInForm>
+                <ShowInGrid>False</ShowInGrid>
+                <Group></Group>
+                <RepsEnabled>False</RepsEnabled>
+              </TImmutableIntegerAttribute>
             </attributes>
           </output>
           <output>
@@ -2694,7 +2761,7 @@
             <ShowInGrid>True</ShowInGrid>
             <Group></Group>
             <RepsEnabled>False</RepsEnabled>
-            <InLocAddr>0</InLocAddr>
+            <InLocAddr>3</InLocAddr>
             <UserEdited>False</UserEdited>
             <Options></Options>
             <OptionsIndex>3</OptionsIndex>
@@ -3629,6 +3696,226 @@
             <attributes/>
           </output>
         </outputs>
+      </sensor>
+      <sensor>
+        <CanEdit>True</CanEdit>
+        <FileName>p1_23x.scs</FileName>
+        <FileVersion>2.5</FileVersion>
+        <HelpContext>10400</HelpContext>
+        <HelpFile>scwin.chm</HelpFile>
+        <ImageFilename>C:\Program Files\Campbellsci\SCWin\Images\voltse.jpg</ImageFilename>
+        <LongName>Generic Measurements\Single Ended Voltage</LongName>
+        <ShortCutVersion>2.9</ShortCutVersion>
+        <ShortName>VoltsSE</ShortName>
+        <WireColorEditable>True</WireColorEditable>
+        <AllowWireMove>True</AllowWireMove>
+        <Category>0</Category>
+        <ConnectedToID>60904</ConnectedToID>
+        <Duplicate>False</Duplicate>
+        <Exclusive>False</Exclusive>
+        <MuxFile></MuxFile>
+        <MuxToLogger>False</MuxToLogger>
+        <ParentSensorID>-1</ParentSensorID>
+        <Reps>0</Reps>
+        <SensorID>11</SensorID>
+        <SpanCards>True</SpanCards>
+        <UserRepsEnabled>True</UserRepsEnabled>
+        <SyncVariableSuffixes>False</SyncVariableSuffixes>
+        <attributes>
+          <TAttribute>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>SEAnalog</Caption>
+            <Handle>SEV_Chan</Handle>
+            <HelpContext>0</HelpContext>
+            <TypeTag>1</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>17</Value>
+            <Units></Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>False</ShowInForm>
+            <ShowInGrid>False</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+          </TAttribute>
+          <TAttribute>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>AG</Caption>
+            <Handle>SEGround</Handle>
+            <HelpContext>0</HelpContext>
+            <TypeTag>1</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>1</Value>
+            <Units></Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>False</ShowInForm>
+            <ShowInGrid>False</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+          </TAttribute>
+          <TAttribute>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>AG</Caption>
+            <Handle>SE_Shield</Handle>
+            <HelpContext>0</HelpContext>
+            <TypeTag>1</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>1</Value>
+            <Units></Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>False</ShowInForm>
+            <ShowInGrid>False</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+          </TAttribute>
+          <TVariableAttribute>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>Measurement Result</Caption>
+            <Handle>SEVolts</Handle>
+            <HelpContext>10400</HelpContext>
+            <TypeTag>0</TypeTag>
+            <ValidOutPuts>Sample,Average,StdDev,Total,Maximum,Minimum,WindVector</ValidOutPuts>
+            <Value>SEVolt</Value>
+            <Units>@mV</Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits>mV</ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>True</ShowInForm>
+            <ShowInGrid>True</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+            <InLocAddr>12</InLocAddr>
+            <UserEdited>False</UserEdited>
+            <CRBasicDataType>dtFloat</CRBasicDataType>
+            <DataLength>0</DataLength>
+            <isPublic>True</isPublic>
+          </TVariableAttribute>
+          <TComboAttribute>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>Range of Sensor Voltage</Caption>
+            <Handle>RangeCode</Handle>
+            <HelpContext>10400</HelpContext>
+            <TypeTag>0</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>1000 mV</Value>
+            <Units></Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>True</ShowInForm>
+            <ShowInGrid>True</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+            <InLocAddr>0</InLocAddr>
+            <UserEdited>True</UserEdited>
+            <Options>10 mV,50 mV,200 mV,1000 mV,5000 mV</Options>
+            <OptionsIndex>4</OptionsIndex>
+          </TComboAttribute>
+          <TComboAttribute>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>Measurement Integration</Caption>
+            <Handle>Integration</Handle>
+            <HelpContext>10400</HelpContext>
+            <TypeTag>0</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>Reject 60 Hz Noise (16.667 ms)</Value>
+            <Units></Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>True</ShowInForm>
+            <ShowInGrid>True</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+            <InLocAddr>0</InLocAddr>
+            <UserEdited>False</UserEdited>
+            <Options>Reject 60 Hz Noise (16.667 ms),Reject 50 Hz Noise (20 ms),Fast (250 us)</Options>
+            <OptionsIndex>1</OptionsIndex>
+          </TComboAttribute>
+          <TFloatAttributeMinMax>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>Multiplier</Caption>
+            <Handle>SEMult</Handle>
+            <HelpContext>10400</HelpContext>
+            <TypeTag>0</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>1.0</Value>
+            <Units></Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>True</ShowInForm>
+            <ShowInGrid>True</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+            <InLocAddr>0</InLocAddr>
+            <UserEdited>False</UserEdited>
+            <Minimum>-99999</Minimum>
+            <Maximum>99999</Maximum>
+          </TFloatAttributeMinMax>
+          <TFloatAttributeMinMax>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>Offset</Caption>
+            <Handle>SEOffset</Handle>
+            <HelpContext>10400</HelpContext>
+            <TypeTag>0</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>0.0</Value>
+            <Units></Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>True</ShowInForm>
+            <ShowInGrid>True</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+            <InLocAddr>0</InLocAddr>
+            <UserEdited>False</UserEdited>
+            <Minimum>-99999</Minimum>
+            <Maximum>99999</Maximum>
+          </TFloatAttributeMinMax>
+          <TImmutableStringAttribute>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption></Caption>
+            <Handle>RangeC</Handle>
+            <HelpContext>0</HelpContext>
+            <TypeTag>0</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>21</Value>
+            <Units></Units>
+            <UnitsIndex>0</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>False</ShowInForm>
+            <ShowInGrid>False</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>False</RepsEnabled>
+          </TImmutableStringAttribute>
+        </attributes>
+        <outputs/>
       </sensor>
     </sensors>
     <flags>
