@@ -10,9 +10,12 @@ import time
 import datetime
 import binascii
 import string
-import libcr23x
 import os
+import itertools
+
+import libcr23x
 import siteDefs
+
 
 programFilename = 'cr23x_programs/wind_tunnel_8channels.scw'
 timeStamp = datetime.datetime.now()
@@ -77,8 +80,8 @@ with serial.Serial(port=port, baudrate=9600,
         print binascii.hexlify(j5)
         
         try:
-            for n in range(100):
-                print "Tx hey what are the numbers now?"
+            for n in itertools.count():
+                print "[{}] Tx hey what are the numbers now?".format(n)
                 ser.write('K\r')
                 expectedBytes = libcr23x.calcKmessageLength(nlocs) # eg 58 for 11 fields
                 d = ser.read(expectedBytes)
