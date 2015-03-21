@@ -1,3 +1,8 @@
+# -*- coding: utf-8
+"""
+This is the IV curve tracer. Run every time you want curve trace info.
+"""
+
 from __future__ import print_function
 import visa
 import re
@@ -6,6 +11,7 @@ import matplotlib.pyplot as plt
 from collections import namedtuple
 import pickle
 import datetime
+import siteDefs
 
 def getDevice():
     rm = visa.ResourceManager()
@@ -83,7 +89,8 @@ def main(date, outputPickle, outputPlot):
                                   date)
     with open(outputPickle, 'wb') as f:
         pickle.dump(calibration,f)
-    
+
+    plt.cla()
     plt.plot(I, Vout,'o')
     plt.xlabel('DUT current ($I/$[amps])')
     plt.ylabel('DUT voltage ($V/$[volts])')
@@ -93,8 +100,10 @@ if __name__ == "__main__":
     # ohms
     date = datetime.datetime.now()
     datestr = date.isoformat().replace(':','=')
-    outputPickle = "data/pvpanel/{}.pkl".format(datestr)
-    outputPlot = "data/pvpanel/{}.png".format(datestr)
+    basename = siteDefs.data_base_dir + "curve_traces/"
+    outputPickle = "{}{}.pkl".format(basename, datestr)
+    outputPlot = "{}{}.png".format(basename, datestr)
     main(date, outputPickle, outputPlot)
+    print("Saved: \n{}\n{}".format(outputPickle, outputPlot))
 
     

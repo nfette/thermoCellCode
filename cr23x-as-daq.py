@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+This is the code for retrieving CR23x samples approximately every second.
+This does not prevent the CR23x from recording the usual "final storage" data
+at 1 minute intervals. However, you should not attempt to connect to the CR23x
+via another program while this one is running.
 
-This is a temporary script file.
+To stop collecting samples, simply press Ctrl-C in the shell window.
 """
 
 import serial
@@ -20,7 +23,7 @@ import siteDefs
 programFilename = 'cr23x_programs/wind_tunnel_8channels.scw'
 timeStamp = datetime.datetime.now()
 timeStampStr = timeStamp.isoformat().replace(':','=')
-basename = "myoutputs"
+basename = "cr23x_outputs_"
 outputFilename = "{}{}{}.dat".format(siteDefs.data_base_dir, basename, timeStampStr)
 port = 'com3'
 
