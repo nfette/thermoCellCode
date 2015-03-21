@@ -72,7 +72,7 @@ def runUpStairs(inst, start, stop, step, stim, shape):
 def main(date, outputPickle, outputPlot):
     rm,inst = getDevice()
     print(inst.query("*IDN?"))
-    start, stop, step, stim = 0.0, 0.5, 0.01, 0.0
+    start, stop, step, stim = -0.5, 0.5, 0.01, 0.0
     npoints = 1+(stop-start)/step
     nfields = 3
     shape = npoints,nfields
