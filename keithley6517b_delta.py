@@ -25,6 +25,11 @@ def getDevice():
     #print(inst.query("*IDN?"))
     return rm,inst
 
+# These have to follow the order in the manual
+useful_string0 = ":FORM:ELEM READ,RNUM,UNIT,TST,STAT,VSO"
+# Example output looks like this:
+example_read = "+01.01103E+00NVDC,09:00:20.00,26-Mar-2015,+01945RDNG#,+0001.000Vsrc"
+
 useful_string1 = """*rst;*CLS;
 stat:meas:enab 512;
 *sre 1;
@@ -46,6 +51,10 @@ useful_string2 = "*OPC?"
 useful_string3 = ":TSEQ:ARM"
 useful_string4 = ":TRACE:DATA?"
 
+useful_string5 = ":SOUR:VOLT {}"
+useful_string6 = ":OUTP {:b}"
+useful_string7 = ":READ?"
+
 fields = ['start','stop','step','stim','nfields','units','data',
           'r_current_sensor','date']
 pvpanelType = namedtuple('pvpanelType',fields)
@@ -57,6 +66,7 @@ def runUpStairs(inst, start, stop, step, stim, shape):
     inst.write(useful_string3)
     inst.wait_for_srq()
     response = inst.query(useful_string4)
+    print(response)
     p = re.compile(r'(.+?)(\D+)$')
     theArray = []
     unitArray = []
@@ -69,20 +79,33 @@ def runUpStairs(inst, start, stop, step, stim, shape):
     units = np.array(unitArray).reshape(shape)
     return result, units
 
+def sourceVoltageReadVoltage(inst,Vin):
+    inst.write(useful_string5.format(Vin))
+    try:
+        inst.write(useful_string6.format(True))
+        response = inst.query(useful_string7)
+        print(response)
+    finally:
+        # Make sure we don't leave it running, maybe
+        inst.write(useful_string6.format(False))
+
 def main(date, outputPickle, outputPlot):
     rm,inst = getDevice()
     print(inst.query("*IDN?"))
+    inst.write(useful_string0)
     start, stop, step, stim = -0.5, 0.5, 0.01, 0.0
     npoints = 1+(stop-start)/step
     nfields = 3
     shape = npoints,nfields
+    for n in range(10):
+        sourceVoltageReadVoltage(inst,1.0)
     result, units = runUpStairs(inst, start, stop, step, stim, shape)
     #Vin = np.arange(start,stop,step)
     Vin = np.linspace(start,stop,npoints)
     #print(result)
     Vout, time, iSample = result.T
     R_current_sensor = 98.3 # ohms
-    V_current_sensor = Vin - Vout
+    V_current_sensor = Vin + Vout
     I = V_current_sensor / R_current_sensor
     calibration = pvpanelType(start, stop, step, stim, nfields,
                                   units, result, R_current_sensor,
