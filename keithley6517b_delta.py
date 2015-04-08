@@ -69,6 +69,30 @@ pvpanelType = namedtuple('pvpanelType',fields)
 def runUpStairs(inst, start, stop, step, stim, shape):
     inst.write(useful_string1.format(start, stop, step, stim))
     print(inst.query(useful_string2))
+
+    # Some options ...
+    #inst.write(":SYST:TST:TYPE RTCL") # options: REL or RTCL.
+    #inst.write(":FORM:ELEM READ,RNUM,UNIT,TST,STAT")
+
+    # options: ABS or DELT.
+    # Interesting fact: if :SYST:TST:TYPE? is RTCL and :TRACE:TST:FORM? is ABS,
+    #     then you get a RTCL value (hour:min:sec.00,day-month-year).
+    # If :SYST:TST:TYPE? is RTCL and :TRACE:TST:FORM? is DELT,
+    #     then you get a RTCL value (hour:min:sec.00,day-month-year).
+    # If :SYST:TST:TYPE? is REL and :TRACE:TST:FORM? is ABS,
+    #     then you get a value with unit "secs".
+    # If :SYST:TST:TYPE? is REL and :TRACE:TST:FORM? is DELT,
+    #     then you get an "DELTA"+value+"SECS".
+    inst.write(":SYST:TST:TYPE REL")
+    inst.write(":TRACE:TST:FORM ABS")
+    # From manual: READ,RNUM,UNIT,STAT are always enabled.
+    # Try it: if you request them, you get synatx error.
+    # However, they do show up in :TRACE:ELEM?
+    # Allowed options to request: TST,HUM,CHAN,ETEM,VSO or NONE
+    inst.write(":TRACE:ELEM TST,VSO")
+    # Found a bug in Kiethley. If you do :SYST:TST:TYPE RTCL, then
+    # :TRAC:DATA? will be formatted in RTCL timestamp, although the
+    # :TRACE:TST:FORM? still returns eg. ABS. A nasty trick!
     
     inst.write(useful_string3)
     inst.wait_for_srq()
@@ -121,6 +145,7 @@ def main(date, outputPickle, outputPlot):
     npoints = 1+(stop-start)/step
     nfields = 3
     shape = npoints,nfields
+    inst.write(":SYST:TST:TYPE RTCL")
     for n in range(10):
         sourceVoltageReadVoltage(inst,1.0)
     result, units = runUpStairs(inst, start, stop, step, stim, shape)

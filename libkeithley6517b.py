@@ -7,7 +7,8 @@ To learn how to do, stufflook for Reference manual:
 '6517b-901-01--B-Jun 2009--Ref.pdf'.
 Chapter 14 contains SCPI command reference.
 
-Documentation for PyVISA is online.
+Documentation for PyVISA is online. Start here:
+http://pyvisa.readthedocs.org/en/master/getting.html
 """
 from __future__ import print_function
 import visa
@@ -31,12 +32,13 @@ def getDevice():
     #print(inst.query("*IDN?"))
     return rm,inst
 
+def initDevice(inst):
+    inst.write("*rst;*CLS;")
+
 def configVSO(inst):
-    inst.write("""*rst;*CLS;
-stat:meas:enab 512;
+    inst.write("""stat:meas:enab 512;
 :SENS:FUNC 'VOLT';
-:SENS:CURR:RANG:AUTO ON;
-""")
+:SENS:CURR:RANG:AUTO ON;""")
     inst.write(defaultFormat.getFormatCommand())
     
 def sourceVoltageReadVoltage(inst,Vin,stayOn=False):
@@ -51,8 +53,7 @@ def sourceVoltageReadVoltage(inst,Vin,stayOn=False):
         inst.write("OUTP {:b}".format(False))
 
 def configStairSweep(inst):
-    inst.write("""*rst;*CLS;
-stat:meas:enab 512;
+    inst.write("""stat:meas:enab 512;
 *sre 1;
 :SENS:FUNC 'VOLT';
 :SENS:CURR:RANG:AUTO ON;
@@ -100,7 +101,10 @@ readStruct = namedtuple('ReadStruct',
                          'vso','vsounit'])
 
 def parseRead(format_flags, s, recurse=False):
-    """Read a string from the Keithley and output the data."""
+    """Read a string from the Keithley and output the data.
+Current, not all options for format flags are supported.
+(There are very many possibilities!)
+"""
     if format_flags.VSO:
         #aread,atime,adate,arnum,avso = s.split(',')
         headache = s.split(',')
