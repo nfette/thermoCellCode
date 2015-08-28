@@ -49,8 +49,10 @@ useful_string4 = ":TRACE:DATA?"
 fields = ['start','stop','step','stim','nfields','units','data',
           'r_current_sensor','date']
 pvpanelType = namedtuple('pvpanelType',fields)
+response = ''
 
 def runUpStairs(inst, start, stop, step, stim, shape):
+    global response
     inst.write(useful_string1.format(start, stop, step, stim))
     print(inst.query(useful_string2))
     
@@ -70,6 +72,7 @@ def runUpStairs(inst, start, stop, step, stim, shape):
     return result, units
 
 def main(date, outputPickle, outputPlot):
+    global rm, inst
     rm,inst = getDevice()
     print(inst.query("*IDN?"))
     start, stop, step, stim = -0.5, 0.5, 0.01, 0.0
