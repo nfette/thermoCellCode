@@ -37,9 +37,13 @@ example_read = "+01.01103E+00NVDC,09:00:20.00,26-Mar-2015,+01945RDNG#,+0001.000V
 # However, when running a sequence mode, the VSO is ommitted, like:
 example_read_seq = "+00.00849E+00NVDC,09:43:20.00,26-Mar-2015,+00000RDNG#"
 
+# Do not need to :SYST:TST:REL:RES
 useful_string1 = """*rst;*CLS;
 stat:meas:enab 512;
 *sre 1;
+
+:SYST:TST:TYPE REL;
+:TRAC:TST:FORM ABS;
 
 :SENS:FUNC 'VOLT';
 :SENS:CURR:RANG:AUTO ON;
@@ -51,8 +55,6 @@ stat:meas:enab 512;
 :TSEQ:STSW:STIM {};
 :TSEQ:TSO imm;
 
-:SYST:TST:TYPE REL;
-:TRAC:TST:FORM ABS;
 """
 
 useful_string2 = "*OPC?"
@@ -86,12 +88,14 @@ def runUpStairs(inst, start, stop, step, stim, shape):
     # If :SYST:TST:TYPE? is REL and :TRACE:TST:FORM? is DELT,
     #     then you get an "DELTA"+value+"SECS".
     inst.write(":SYST:TST:TYPE REL")
-    inst.write(":TRACE:TST:FORM ABS")
+    inst.write(":TRAC:TST:FORM ABS")
+    
     # From manual: READ,RNUM,UNIT,STAT are always enabled.
     # Try it: if you request them, you get synatx error.
     # However, they do show up in :TRACE:ELEM?
     # Allowed options to request: TST,HUM,CHAN,ETEM,VSO or NONE
     inst.write(":TRACE:ELEM TST,VSO")
+
     # Found a bug in Kiethley. If you do :SYST:TST:TYPE RTCL, then
     # :TRAC:DATA? will be formatted in RTCL timestamp, although the
     # :TRACE:TST:FORM? still returns eg. ABS. A nasty trick!
@@ -109,7 +113,11 @@ def runUpStairs(inst, start, stop, step, stim, shape):
         val,unit = m.groups()
         #if val.contains(':'):
         #    theArray.append(datetime.fromstring(val)
-        theArray.append(float(val))
+        try:
+            theArray.append(float(val))
+        except:
+            theArray.append(-999)
+            print("Could not parse your number, '{}'".format(val))
         unitArray.append(unit)
     result = np.array(theArray).reshape(shape)
     units = np.array(unitArray).reshape(shape)
@@ -138,17 +146,24 @@ def main(date, outputPickle, outputPlot):
     time.sleep(1)
     inst.write(':DISP:WIND2:TEXT:DATA "Loading   ... electrons"')
     time.sleep(1)
+    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e-"')
+    time.sleep(0.1)
+    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e-"')
+    time.sleep(0.1)
+    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e- e-"')
+    time.sleep(0.1)
     inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e- e- e-"')
+    
     time.sleep(1)
     inst.write(':DISP:TEXT:STAT 0')
     inst.write(':DISP:WIND2:TEXT:STAT 0')
     
     inst.write(useful_string0)
-    start, stop, step, stim = -0.0, 0.5, 0.01, 0.0
+    start, stop, step, stim = -0.1, 0.5, 0.01, 0.0
     npoints = 1+(stop-start)/step
     nfields = 3
     shape = npoints,nfields
-    inst.write(":SYST:TST:TYPE RTCL")
+    #inst.write(":SYST:TST:TYPE RTCL")
     for n in range(10):
         sourceVoltageReadVoltage(inst,1.0)
     result, units = runUpStairs(inst, start, stop, step, stim, shape)

@@ -6,7 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 
-myfile = siteDefs.data_base_dir + "curve_traces/" + "2015-03-20T19=19=36.262000.pkl"
+#TODO: make this a command line argument
+myfile = siteDefs.data_base_dir + "curve_traces/" + "2015-08-28T18=45=31.788000.pkl"
 
 
 with open(myfile,'r') as f:
@@ -39,5 +40,5 @@ with open(myfile,'r') as f:
     plt.ylabel('voltage / Watts')
     plt.savefig(fig2)
 
-    plt.show()
-    
+    #plt.show()
+    plt.close('all')
