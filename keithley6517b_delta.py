@@ -51,7 +51,8 @@ stat:meas:enab 512;
 :TSEQ:STSW:STIM {};
 :TSEQ:TSO imm;
 
-
+:SYST:TST:TYPE REL;
+:TRAC:TST:FORM ABS;
 """
 
 useful_string2 = "*OPC?"
@@ -67,6 +68,7 @@ fields = ['start','stop','step','stim','nfields','units','data',
 pvpanelType = namedtuple('pvpanelType',fields)
 
 def runUpStairs(inst, start, stop, step, stim, shape):
+    global response
     inst.write(useful_string1.format(start, stop, step, stim))
     print(inst.query(useful_string2))
 
@@ -124,9 +126,10 @@ def sourceVoltageReadVoltage(inst,Vin):
         inst.write(useful_string6.format(False))
 
 def main(date, outputPickle, outputPlot):
+    global rm, inst
     rm,inst = getDevice()
     print(inst.query("*IDN?"))
-    inst.write(':DISP:TEXT:DATA "Clinton 2016"')
+    inst.write(':DISP:TEXT:DATA "Clinton <3 2016"')
     inst.write(':DISP:TEXT:STAT 1')
     inst.write(':DISP:WIND2:TEXT:DATA "Loading   ..."')
     inst.write(':DISP:WIND2:TEXT:STAT 1')
@@ -135,7 +138,7 @@ def main(date, outputPickle, outputPlot):
     time.sleep(1)
     inst.write(':DISP:WIND2:TEXT:DATA "Loading   ... electrons"')
     time.sleep(1)
-    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... electrons"')
+    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e- e- e-"')
     time.sleep(1)
     inst.write(':DISP:TEXT:STAT 0')
     inst.write(':DISP:WIND2:TEXT:STAT 0')
