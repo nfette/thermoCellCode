@@ -159,20 +159,23 @@ def main(date, outputPickle, outputPlot):
     inst.write(':DISP:WIND2:TEXT:STAT 0')
     
     inst.write(useful_string0)
-    start, stop, step, stim = -0.1, 0.5, 0.01, 0.0
+    start, stop, step, stim = -0.2, 0.5, 0.01, 0.01
     npoints = 1+(stop-start)/step
     nfields = 3
     shape = npoints,nfields
     #inst.write(":SYST:TST:TYPE RTCL")
-    for n in range(10):
-        sourceVoltageReadVoltage(inst,1.0)
+    for n in range(5):
+        sourceVoltageReadVoltage(inst,0)
+    for n in range(5):
+        sourceVoltageReadVoltage(inst,start)
+        
     result, units = runUpStairs(inst, start, stop, step, stim, shape)
     #Vin = np.arange(start,stop,step)
     Vin = np.linspace(start,stop,npoints)
     #print(result)
     Vout, timestamp, iSample = result.T
     R_current_sensor = 98.3 # ohms
-    V_current_sensor = Vin + Vout
+    V_current_sensor = Vin - Vout
     I = V_current_sensor / R_current_sensor
     calibration = pvpanelType(start, stop, step, stim, nfields,
                                   units, result, R_current_sensor,

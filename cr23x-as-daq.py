@@ -28,11 +28,14 @@ outputFilename = "{}{}{}.dat".format(siteDefs.data_base_dir, basename, timeStamp
 port = 'com3'
 
 if not os.path.isfile(outputFilename):
+    print("Creating {} for headers and data".format(outputFilename))
     with open(outputFilename,'w') as f:
         labels = libcr23x.getLabels(programFilename)
         nlocs = len(labels)
         labels = ['TimeStamp']+labels
         f.write(','.join(labels) + '\n')
+else:
+    print("Opening {} and appending data".format(outputFilename))
 
 with serial.Serial(port=port, baudrate=9600,
                    timeout=2, writeTimeout=2) as ser,\
