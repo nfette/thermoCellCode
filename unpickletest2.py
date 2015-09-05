@@ -2,12 +2,13 @@
 
 from __future__ import print_function
 import pickle
-from keithley6517b_delta import pvpanelType
+from libkeithley6517b import pvpanelType
 import siteDefs
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 import sys
+import inset_subplot
 
 #TODO: make this a command line argument
 
@@ -27,35 +28,30 @@ def main(myfile):
         fig1 = siteDefs.data_base_dir + "power_vs_current/" + datestr + "_figure1.png"
         fig2 = siteDefs.data_base_dir + "power_vs_current/" + datestr + "_figure2.png"
 
-        plt.figure(1,figsize=(20,8))
-        plt.subplot(121)
-        plt.cla()
-        plt.plot(1e3 * I, 1e3 * Vcell,'o-')
-        plt.xlabel('Cell current / mA)')
-        plt.ylabel('Cell potential / mV')
-        plt.xlim([-0.0,6])
-        plt.ylim([-0.0,20])
-        plt.title(data.date.isoformat())
-        #plt.savefig(fig1)
+        fig=plt.figure(1,figsize=(20,8))
+        ax=fig.add_subplot(121)
+        ax.cla()
+        ax.plot(1e3 * I, 1e3 * Vcell,'o-')
+        ax.set_xlabel('Cell current / mA)')
+        ax.set_ylabel('Cell potential / mV')
+        ax.set_xlim([-0.0,6])
+        ax.set_ylim([-0.0,20])
+        ax.set_title(data.date.isoformat())
+        rect = [0.68,0.68,0.3,0.3]
+        ax2 = inset_subplot.add_subplot_axes(ax,rect)
+        ax2.plot(1e3*I,1e3*Vcell)
         
-##        plt.figure(1)
-##        plt.cla()
-##        plt.plot(1e3 * I, 1e6 * Power, 'o-')
-##        plt.xlabel('Current / mA')
-##        plt.ylabel(r'Power / $\mathrm{\mu}$W')
-##        plt.savefig(fig1)
-
-        #plt.figure(2)
-        plt.subplot(122)
-        plt.cla()
-        plt.plot(1e3 * I, 1e6 * Power,'o-')
-        #plt.xlim([0,1.1*max(1e3 * I[Power>0])])
-        #plt.ylim([0,1.1*max(1e6 * Power)])
-        plt.xlim([0.0,6])
-        plt.ylim([0,25])
-        plt.xlabel('Cell current / mA')
-        plt.ylabel('Power generated / $\mu$W')
-        plt.title(data.date.isoformat())
+        ax=fig.add_subplot(122)
+        ax.cla()
+        ax.plot(1e3 * I, 1e6 * Power,'o-')
+        ax.set_xlim([0.0,6])
+        ax.set_ylim([0,25])
+        ax.set_xlabel('Cell current / mA')
+        ax.set_ylabel('Power generated / $\mu$W')
+        ax.set_title(data.date.isoformat())
+        rect=[0.68,0.68,0.3,0.3]
+        ax2=inset_subplot.add_subplot_axes(ax,rect)
+        ax2.plot(1e3*I, 1e6*Power)
         plt.savefig(fig1)
 
         #plt.show()

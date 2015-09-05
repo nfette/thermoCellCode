@@ -18,6 +18,13 @@ import datetime
 import pickle
 
 """
+Actually this should go somewhere else but meanwhile it's here.
+"""
+pvfields = ['start','stop','step','stim','nfields','units','data',
+          'r_current_sensor','date']
+pvpanelType = namedtuple('pvpanelType',pvfields)
+
+"""
     Opening and configuring the device.
 """
 def getDevice():

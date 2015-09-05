@@ -18,6 +18,7 @@ import datetime
 import siteDefs
 import time
 import unpickletest2
+from libkeithley6517b import pvpanelType
 
 def getDevice():
     rm = visa.ResourceManager()
@@ -66,9 +67,7 @@ useful_string5 = ":SOUR:VOLT {}"
 useful_string6 = ":OUTP {:b}"
 useful_string7 = ":READ?"
 
-fields = ['start','stop','step','stim','nfields','units','data',
-          'r_current_sensor','date']
-pvpanelType = namedtuple('pvpanelType',fields)
+
 
 def runUpStairs(inst, start, stop, step, stim, shape):
     global response
