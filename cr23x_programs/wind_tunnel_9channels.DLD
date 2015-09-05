@@ -4,13 +4,13 @@
 ;$
 ;:BattV    :ProgSig  :PTemp_C  :T_gun_1  :T_gun_2  
 ;:T_h_dry  :T_h_wet  :T_c_wet  :T_c_dry  :T_amb_1  
-;:T_amb_2  :SEVolt   
+;:T_amb_2  :T_fintip 
 ;$
 
 ;%
 ;Final Storage Label File for:  wind_tunnel_9channels.SCW
-;Date:  3/16/2015
-;Time:  17:08:39
+;Date:  9/4/2015
+;Time:  17:38:14
 ;
 ;101 Output_Table   1.00 Min
 ;1 101 L
@@ -26,15 +26,17 @@
 ;11 T_c_dry_AVG  L
 ;12 T_amb_1_AVG  L
 ;13 T_amb_2_AVG  L
-;14 PTemp_C_STD  L
-;15 T_gun_1_STD  L
-;16 T_gun_2_STD  L
-;17 T_h_dry_STD  L
-;18 T_h_wet_STD  L
-;19 T_c_wet_STD  L
-;20 T_c_dry_STD  L
-;21 T_amb_1_STD  L
-;22 T_amb_2_STD  L
+;14 T_fintip_AVG  L
+;15 PTemp_C_STD  L
+;16 T_gun_1_STD  L
+;17 T_gun_2_STD  L
+;18 T_h_dry_STD  L
+;19 T_h_wet_STD  L
+;20 T_c_wet_STD  L
+;21 T_c_dry_STD  L
+;22 T_amb_1_STD  L
+;23 T_amb_2_STD  L
+;24 T_fintip_STD  L
 ;
 ;102 Output_Table 1440.00 Min
 ;1 102 L
@@ -44,7 +46,7 @@
 ;5 BattV_MIN  L
 ;6 ProgSig  L
 ;
-;Estimated final storage locations used per day:   31686
+;Estimated final storage locations used per day:   34566
 ;%
 
 MODE 1
@@ -76,13 +78,15 @@ SCAN RATE 1.0000
 7:1
 8:0
 
-7:P1
+7:P14
 1:1
-2:24
-3:17
-4:12
-5:1.0
-6:0.0
+2:21
+3:9
+4:3
+5:3
+6:12
+7:1
+8:0
 
 8:P92
 1:0
@@ -132,60 +136,68 @@ SCAN RATE 1.0000
 1:1
 2:11
 
-20:P82
+20:P71
 1:1
-2:3
+2:12
 
 21:P82
 1:1
-2:4
+2:3
 
 22:P82
 1:1
-2:5
+2:4
 
 23:P82
 1:1
-2:6
+2:5
 
 24:P82
 1:1
-2:7
+2:6
 
 25:P82
 1:1
-2:8
+2:7
 
 26:P82
 1:1
-2:9
+2:8
 
 27:P82
 1:1
-2:10
+2:9
 
 28:P82
 1:1
+2:10
+
+29:P82
+1:1
 2:11
 
-29:P92
+30:P82
+1:1
+2:12
+
+31:P92
 1:0
 2:1440
 3:10
 
-30:P80
+32:P80
 1:1
 2:102
 
-31:P77
+33:P77
 1:1220
 
-32:P74
+34:P74
 1:1
 2:0
 3:1
 
-33:P70
+35:P70
 1:1
 2:2
 
@@ -199,7 +211,7 @@ MODE 3
 
 MODE 10
 1:28
-2:158
+2:164
 3:0
 
 MODE 12

@@ -141,11 +141,11 @@ def main(date, outputPickle, outputPlot):
     inst.write(':DISP:TEXT:STAT 1')
     inst.write(':DISP:WIND2:TEXT:DATA "Loading   ..."')
     inst.write(':DISP:WIND2:TEXT:STAT 1')
-    time.sleep(1)
+    time.sleep(0.1)
     inst.write(':DISP:WIND2:TEXT:DATA "Loading   ... platform"')
-    time.sleep(1)
+    time.sleep(0.1)
     inst.write(':DISP:WIND2:TEXT:DATA "Loading   ... electrons"')
-    time.sleep(1)
+    time.sleep(0.1)
     inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e-"')
     time.sleep(0.1)
     inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e-"')
@@ -154,7 +154,7 @@ def main(date, outputPickle, outputPlot):
     time.sleep(0.1)
     inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e- e- e-"')
     
-    time.sleep(1)
+    time.sleep(0.1)
     inst.write(':DISP:TEXT:STAT 0')
     inst.write(':DISP:WIND2:TEXT:STAT 0')
     
@@ -164,10 +164,11 @@ def main(date, outputPickle, outputPlot):
     nfields = 3
     shape = npoints,nfields
     #inst.write(":SYST:TST:TYPE RTCL")
-    for n in range(5):
-        sourceVoltageReadVoltage(inst,0)
-    for n in range(5):
-        sourceVoltageReadVoltage(inst,start)
+    #We're not presently using this
+##    for n in range(5):
+##        sourceVoltageReadVoltage(inst,0)
+##    for n in range(5):
+##        sourceVoltageReadVoltage(inst,start)
         
     result, units = runUpStairs(inst, start, stop, step, stim, shape)
     #Vin = np.arange(start,stop,step)

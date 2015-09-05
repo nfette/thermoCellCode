@@ -20,7 +20,7 @@
       <string>9,T_c_dry,0,0,0,0</string>
       <string>10,T_amb_1,0,0,0,0</string>
       <string>11,T_amb_2,0,0,0,0</string>
-      <string>12,SEVolt,0,0,0,0</string>
+      <string>12,T_fintip,0,0,0,0</string>
     </inlocstringlist>
     <Modified>True</Modified>
     <storagerates>
@@ -91,7 +91,7 @@
       <datatables/>
     </crbasicprogram>
     <idgenerator>
-      <CurrentOrdinalNumber>46</CurrentOrdinalNumber>
+      <CurrentOrdinalNumber>57</CurrentOrdinalNumber>
     </idgenerator>
     <loggerid>
       <ID>0</ID>
@@ -113,7 +113,7 @@
     <Extension>.DLD</Extension>
     <Filename>C:\Program Files\Campbellsci\SCWin\cr23x.dlf</Filename>
     <Name>CR23X</Name>
-    <NextSensorID>11</NextSensorID>
+    <NextSensorID>12</NextSensorID>
     <DisplayName>CR23X</DisplayName>
     <MAXExcitationCurrent_mA>0</MAXExcitationCurrent_mA>
     <MAXExcitationVoltage_mV>0</MAXExcitationVoltage_mV>
@@ -1172,7 +1172,7 @@
         </connectorattributes>
       </connector>
       <connector>
-        <Consumed>0.5</Consumed>
+        <Consumed>0</Consumed>
         <StripNumber>0</StripNumber>
         <TerminalName>Ground</TerminalName>
         <UsedFor>0</UsedFor>
@@ -1181,38 +1181,7 @@
         <partner>-1</partner>
         <pref_ground>-1</pref_ground>
         <partner_type>-1</partner_type>
-        <connectorattributes>
-          <connectorattribute>
-            <CalledBy>100</CalledBy>
-            <ConsumedPercent>25</ConsumedPercent>
-            <GPLabel></GPLabel>
-            <Handle>SEGround</Handle>
-            <JumperID>0</JumperID>
-            <SensorID>11</SensorID>
-            <SensorName>VoltsSE</SensorName>
-            <WireCaption></WireCaption>
-            <WireColor>Ground</WireColor>
-            <SensorGroup></SensorGroup>
-            <ConnectorGroup></ConnectorGroup>
-            <ChannelType>6</ChannelType>
-            <AllowWireMove>True</AllowWireMove>
-          </connectorattribute>
-          <connectorattribute>
-            <CalledBy>100</CalledBy>
-            <ConsumedPercent>25</ConsumedPercent>
-            <GPLabel></GPLabel>
-            <Handle>SE_Shield</Handle>
-            <JumperID>0</JumperID>
-            <SensorID>11</SensorID>
-            <SensorName>VoltsSE</SensorName>
-            <WireCaption></WireCaption>
-            <WireColor>Shield</WireColor>
-            <SensorGroup></SensorGroup>
-            <ConnectorGroup></ConnectorGroup>
-            <ChannelType>6</ChannelType>
-            <AllowWireMove>True</AllowWireMove>
-          </connectorattribute>
-        </connectorattributes>
+        <connectorattributes/>
       </connector>
       <connector>
         <Consumed>1</Consumed>
@@ -1705,21 +1674,21 @@
             <CalledBy>100</CalledBy>
             <ConsumedPercent>100</ConsumedPercent>
             <GPLabel></GPLabel>
-            <Handle>SEV_Chan</Handle>
+            <Handle>TCDiff</Handle>
             <JumperID>0</JumperID>
-            <SensorID>11</SensorID>
-            <SensorName>VoltsSE</SensorName>
+            <SensorID>12</SensorID>
+            <SensorName>Type K TC</SensorName>
             <WireCaption></WireCaption>
-            <WireColor>Signal</WireColor>
+            <WireColor>Yellow</WireColor>
             <SensorGroup></SensorGroup>
             <ConnectorGroup></ConnectorGroup>
-            <ChannelType>0</ChannelType>
+            <ChannelType>1</ChannelType>
             <AllowWireMove>True</AllowWireMove>
           </connectorattribute>
         </connectorattributes>
       </connector>
       <connector>
-        <Consumed>0</Consumed>
+        <Consumed>1</Consumed>
         <StripNumber>1</StripNumber>
         <TerminalName>9L</TerminalName>
         <UsedFor>0</UsedFor>
@@ -1728,7 +1697,23 @@
         <partner>-1</partner>
         <pref_ground>-1</pref_ground>
         <partner_type>-1</partner_type>
-        <connectorattributes/>
+        <connectorattributes>
+          <connectorattribute>
+            <CalledBy>100</CalledBy>
+            <ConsumedPercent>100</ConsumedPercent>
+            <GPLabel></GPLabel>
+            <Handle>TCDiff</Handle>
+            <JumperID>0</JumperID>
+            <SensorID>12</SensorID>
+            <SensorName>Type K TC</SensorName>
+            <WireCaption></WireCaption>
+            <WireColor>Red</WireColor>
+            <SensorGroup></SensorGroup>
+            <ConnectorGroup></ConnectorGroup>
+            <ChannelType>1</ChannelType>
+            <AllowWireMove>True</AllowWireMove>
+          </connectorattribute>
+        </connectorattributes>
       </connector>
       <connector>
         <Consumed>0</Consumed>
@@ -2637,7 +2622,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>PTemp_C</Measurement>
-            <OutputID>38</OutputID>
+            <OutputID>48</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>PTemp_C_STD</string>
@@ -2829,7 +2814,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>T_gun_1</Measurement>
-            <OutputID>39</OutputID>
+            <OutputID>49</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>T_gun_1_STD</string>
@@ -2951,7 +2936,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>T_gun_2</Measurement>
-            <OutputID>40</OutputID>
+            <OutputID>50</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>T_gun_2_STD</string>
@@ -3073,7 +3058,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>T_h_dry</Measurement>
-            <OutputID>41</OutputID>
+            <OutputID>51</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>T_h_dry_STD</string>
@@ -3195,7 +3180,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>T_h_wet</Measurement>
-            <OutputID>42</OutputID>
+            <OutputID>52</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>T_h_wet_STD</string>
@@ -3317,7 +3302,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>T_c_wet</Measurement>
-            <OutputID>43</OutputID>
+            <OutputID>53</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>T_c_wet_STD</string>
@@ -3439,7 +3424,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>T_c_dry</Measurement>
-            <OutputID>44</OutputID>
+            <OutputID>54</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>T_c_dry_STD</string>
@@ -3561,7 +3546,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>T_amb_1</Measurement>
-            <OutputID>45</OutputID>
+            <OutputID>55</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>T_amb_1_STD</string>
@@ -3683,7 +3668,7 @@
             <Automatic>False</Automatic>
             <IsDefaultOutput>False</IsDefaultOutput>
             <Measurement>T_amb_2</Measurement>
-            <OutputID>46</OutputID>
+            <OutputID>56</OutputID>
             <OutputFileVersion>1.7</OutputFileVersion>
             <outputlabels>
               <string>T_amb_2_STD</string>
@@ -3699,15 +3684,15 @@
       </sensor>
       <sensor>
         <CanEdit>True</CanEdit>
-        <FileName>p1_23x.scs</FileName>
-        <FileVersion>2.5</FileVersion>
-        <HelpContext>10400</HelpContext>
+        <FileName>tck.scs</FileName>
+        <FileVersion>3.2</FileVersion>
+        <HelpContext>21100</HelpContext>
         <HelpFile>scwin.chm</HelpFile>
-        <ImageFilename>C:\Program Files\Campbellsci\SCWin\Images\voltse.jpg</ImageFilename>
-        <LongName>Generic Measurements\Single Ended Voltage</LongName>
+        <ImageFilename>C:\Program Files\Campbellsci\SCWin\Images\tck.jpg</ImageFilename>
+        <LongName>Temperature\Type K (chromel-alumel) Thermocouple</LongName>
         <ShortCutVersion>2.9</ShortCutVersion>
-        <ShortName>VoltsSE</ShortName>
-        <WireColorEditable>True</WireColorEditable>
+        <ShortName>Type K TC</ShortName>
+        <WireColorEditable>False</WireColorEditable>
         <AllowWireMove>True</AllowWireMove>
         <Category>0</Category>
         <ConnectedToID>60904</ConnectedToID>
@@ -3716,38 +3701,19 @@
         <MuxFile></MuxFile>
         <MuxToLogger>False</MuxToLogger>
         <ParentSensorID>-1</ParentSensorID>
-        <Reps>0</Reps>
-        <SensorID>11</SensorID>
+        <Reps>1</Reps>
+        <SensorID>12</SensorID>
         <SpanCards>True</SpanCards>
         <UserRepsEnabled>True</UserRepsEnabled>
         <SyncVariableSuffixes>False</SyncVariableSuffixes>
         <attributes>
-          <TAttribute>
+          <TRepsAttribute>
             <AltLongSensorName></AltLongSensorName>
             <AltShortSensorName></AltShortSensorName>
-            <Caption>SEAnalog</Caption>
-            <Handle>SEV_Chan</Handle>
+            <Caption>How many Type K TC sensors? (Max=4)</Caption>
+            <Handle>RepsHandle</Handle>
             <HelpContext>0</HelpContext>
-            <TypeTag>1</TypeTag>
-            <ValidOutPuts></ValidOutPuts>
-            <Value>17</Value>
-            <Units></Units>
-            <UnitsIndex>1</UnitsIndex>
-            <ActiveUnits></ActiveUnits>
-            <Enabled>True</Enabled>
-            <UserHidden>False</UserHidden>
-            <ShowInForm>False</ShowInForm>
-            <ShowInGrid>False</ShowInGrid>
-            <Group></Group>
-            <RepsEnabled>False</RepsEnabled>
-          </TAttribute>
-          <TAttribute>
-            <AltLongSensorName></AltLongSensorName>
-            <AltShortSensorName></AltShortSensorName>
-            <Caption>AG</Caption>
-            <Handle>SEGround</Handle>
-            <HelpContext>0</HelpContext>
-            <TypeTag>1</TypeTag>
+            <TypeTag>0</TypeTag>
             <ValidOutPuts></ValidOutPuts>
             <Value>1</Value>
             <Units></Units>
@@ -3755,20 +3721,25 @@
             <ActiveUnits></ActiveUnits>
             <Enabled>True</Enabled>
             <UserHidden>False</UserHidden>
-            <ShowInForm>False</ShowInForm>
-            <ShowInGrid>False</ShowInGrid>
+            <ShowInForm>True</ShowInForm>
+            <ShowInGrid>True</ShowInGrid>
             <Group></Group>
             <RepsEnabled>False</RepsEnabled>
-          </TAttribute>
+            <InLocAddr>0</InLocAddr>
+            <UserEdited>False</UserEdited>
+            <DigitCount>4</DigitCount>
+            <Minimum>1</Minimum>
+            <Maximum>4</Maximum>
+          </TRepsAttribute>
           <TAttribute>
             <AltLongSensorName></AltLongSensorName>
             <AltShortSensorName></AltShortSensorName>
-            <Caption>AG</Caption>
-            <Handle>SE_Shield</Handle>
+            <Caption>DiffAnalog</Caption>
+            <Handle>TCDiff</Handle>
             <HelpContext>0</HelpContext>
             <TypeTag>1</TypeTag>
             <ValidOutPuts></ValidOutPuts>
-            <Value>1</Value>
+            <Value>9</Value>
             <Units></Units>
             <UnitsIndex>1</UnitsIndex>
             <ActiveUnits></ActiveUnits>
@@ -3782,36 +3753,59 @@
           <TVariableAttribute>
             <AltLongSensorName></AltLongSensorName>
             <AltShortSensorName></AltShortSensorName>
-            <Caption>Measurement Result</Caption>
-            <Handle>SEVolts</Handle>
-            <HelpContext>10400</HelpContext>
+            <Caption>Temperature</Caption>
+            <Handle>TCTemp</Handle>
+            <HelpContext>21100</HelpContext>
             <TypeTag>0</TypeTag>
-            <ValidOutPuts>Sample,Average,StdDev,Total,Maximum,Minimum,WindVector</ValidOutPuts>
-            <Value>SEVolt</Value>
-            <Units>@mV</Units>
+            <ValidOutPuts>sample,average,stddev,maximum,minimum,eto</ValidOutPuts>
+            <Value>T_fintip</Value>
+            <Units>Deg C,Deg F,K</Units>
             <UnitsIndex>1</UnitsIndex>
-            <ActiveUnits>mV</ActiveUnits>
+            <ActiveUnits>Deg C</ActiveUnits>
+            <Enabled>True</Enabled>
+            <UserHidden>False</UserHidden>
+            <ShowInForm>True</ShowInForm>
+            <ShowInGrid>True</ShowInGrid>
+            <Group></Group>
+            <RepsEnabled>True</RepsEnabled>
+            <InLocAddr>12</InLocAddr>
+            <UserEdited>True</UserEdited>
+            <CRBasicDataType>dtFloat</CRBasicDataType>
+            <DataLength>0</DataLength>
+            <isPublic>True</isPublic>
+          </TVariableAttribute>
+          <TReferenceMemLocAttribute>
+            <AltLongSensorName></AltLongSensorName>
+            <AltShortSensorName></AltShortSensorName>
+            <Caption>Reference Temperature Measurement (deg C)</Caption>
+            <Handle>Reference</Handle>
+            <HelpContext>21100</HelpContext>
+            <TypeTag>0</TypeTag>
+            <ValidOutPuts></ValidOutPuts>
+            <Value>PTemp_C</Value>
+            <Units></Units>
+            <UnitsIndex>1</UnitsIndex>
+            <ActiveUnits></ActiveUnits>
             <Enabled>True</Enabled>
             <UserHidden>False</UserHidden>
             <ShowInForm>True</ShowInForm>
             <ShowInGrid>True</ShowInGrid>
             <Group></Group>
             <RepsEnabled>False</RepsEnabled>
-            <InLocAddr>12</InLocAddr>
+            <InLocAddr>0</InLocAddr>
             <UserEdited>False</UserEdited>
-            <CRBasicDataType>dtFloat</CRBasicDataType>
-            <DataLength>0</DataLength>
-            <isPublic>True</isPublic>
-          </TVariableAttribute>
+            <Options></Options>
+            <OptionsIndex>3</OptionsIndex>
+          </TReferenceMemLocAttribute>
           <TComboAttribute>
             <AltLongSensorName></AltLongSensorName>
             <AltShortSensorName></AltShortSensorName>
-            <Caption>Range of Sensor Voltage</Caption>
-            <Handle>RangeCode</Handle>
-            <HelpContext>10400</HelpContext>
+            <Caption>Temperature range (deg C) if reference temperature is 20 deg C</Caption>
+            <Handle>TCRange</Handle>
+            <HelpContext>21100</HelpContext>
             <TypeTag>0</TypeTag>
             <ValidOutPuts></ValidOutPuts>
-            <Value>1000 mV</Value>
+            <Value>-270 to 265</Value>
             <Units></Units>
             <UnitsIndex>1</UnitsIndex>
             <ActiveUnits></ActiveUnits>
@@ -3823,99 +3817,62 @@
             <RepsEnabled>False</RepsEnabled>
             <InLocAddr>0</InLocAddr>
             <UserEdited>True</UserEdited>
-            <Options>10 mV,50 mV,200 mV,1000 mV,5000 mV</Options>
-            <OptionsIndex>4</OptionsIndex>
-          </TComboAttribute>
-          <TComboAttribute>
-            <AltLongSensorName></AltLongSensorName>
-            <AltShortSensorName></AltShortSensorName>
-            <Caption>Measurement Integration</Caption>
-            <Handle>Integration</Handle>
-            <HelpContext>10400</HelpContext>
-            <TypeTag>0</TypeTag>
-            <ValidOutPuts></ValidOutPuts>
-            <Value>Reject 60 Hz Noise (16.667 ms)</Value>
-            <Units></Units>
-            <UnitsIndex>1</UnitsIndex>
-            <ActiveUnits></ActiveUnits>
-            <Enabled>True</Enabled>
-            <UserHidden>False</UserHidden>
-            <ShowInForm>True</ShowInForm>
-            <ShowInGrid>True</ShowInGrid>
-            <Group></Group>
-            <RepsEnabled>False</RepsEnabled>
-            <InLocAddr>0</InLocAddr>
-            <UserEdited>False</UserEdited>
-            <Options>Reject 60 Hz Noise (16.667 ms),Reject 50 Hz Noise (20 ms),Fast (250 us)</Options>
+            <Options>-270 to 265,-270 to 1254,-270 to 1372</Options>
             <OptionsIndex>1</OptionsIndex>
           </TComboAttribute>
-          <TFloatAttributeMinMax>
-            <AltLongSensorName></AltLongSensorName>
-            <AltShortSensorName></AltShortSensorName>
-            <Caption>Multiplier</Caption>
-            <Handle>SEMult</Handle>
-            <HelpContext>10400</HelpContext>
-            <TypeTag>0</TypeTag>
-            <ValidOutPuts></ValidOutPuts>
-            <Value>1.0</Value>
-            <Units></Units>
-            <UnitsIndex>1</UnitsIndex>
-            <ActiveUnits></ActiveUnits>
-            <Enabled>True</Enabled>
-            <UserHidden>False</UserHidden>
-            <ShowInForm>True</ShowInForm>
-            <ShowInGrid>True</ShowInGrid>
-            <Group></Group>
-            <RepsEnabled>False</RepsEnabled>
-            <InLocAddr>0</InLocAddr>
-            <UserEdited>False</UserEdited>
-            <Minimum>-99999</Minimum>
-            <Maximum>99999</Maximum>
-          </TFloatAttributeMinMax>
-          <TFloatAttributeMinMax>
-            <AltLongSensorName></AltLongSensorName>
-            <AltShortSensorName></AltShortSensorName>
-            <Caption>Offset</Caption>
-            <Handle>SEOffset</Handle>
-            <HelpContext>10400</HelpContext>
-            <TypeTag>0</TypeTag>
-            <ValidOutPuts></ValidOutPuts>
-            <Value>0.0</Value>
-            <Units></Units>
-            <UnitsIndex>1</UnitsIndex>
-            <ActiveUnits></ActiveUnits>
-            <Enabled>True</Enabled>
-            <UserHidden>False</UserHidden>
-            <ShowInForm>True</ShowInForm>
-            <ShowInGrid>True</ShowInGrid>
-            <Group></Group>
-            <RepsEnabled>False</RepsEnabled>
-            <InLocAddr>0</InLocAddr>
-            <UserEdited>False</UserEdited>
-            <Minimum>-99999</Minimum>
-            <Maximum>99999</Maximum>
-          </TFloatAttributeMinMax>
-          <TImmutableStringAttribute>
-            <AltLongSensorName></AltLongSensorName>
-            <AltShortSensorName></AltShortSensorName>
-            <Caption></Caption>
-            <Handle>RangeC</Handle>
-            <HelpContext>0</HelpContext>
-            <TypeTag>0</TypeTag>
-            <ValidOutPuts></ValidOutPuts>
-            <Value>21</Value>
-            <Units></Units>
-            <UnitsIndex>0</UnitsIndex>
-            <ActiveUnits></ActiveUnits>
-            <Enabled>True</Enabled>
-            <UserHidden>False</UserHidden>
-            <ShowInForm>False</ShowInForm>
-            <ShowInGrid>False</ShowInGrid>
-            <Group></Group>
-            <RepsEnabled>False</RepsEnabled>
-          </TImmutableStringAttribute>
         </attributes>
-        <outputs/>
+        <outputs>
+          <output>
+            <CanEdit>True</CanEdit>
+            <FileName>average.out</FileName>
+            <FileVersion>1.6</FileVersion>
+            <HelpContext>50100</HelpContext>
+            <HelpFile>scwin.chm</HelpFile>
+            <ImageFilename></ImageFilename>
+            <LongName>Average</LongName>
+            <ShortCutVersion>2.7</ShortCutVersion>
+            <ShortName>Average</ShortName>
+            <Automatic>False</Automatic>
+            <IsDefaultOutput>False</IsDefaultOutput>
+            <Measurement>T_fintip</Measurement>
+            <OutputID>47</OutputID>
+            <OutputFileVersion>1.6</OutputFileVersion>
+            <outputlabels>
+              <string>T_fintip_AVG</string>
+            </outputlabels>
+            <parentAttributeHandle>TCTemp</parentAttributeHandle>
+            <ParentSensorID>0</ParentSensorID>
+            <Resolution>45</Resolution>
+            <FSLabelChanged>False</FSLabelChanged>
+            <TableNumber>0</TableNumber>
+            <attributes/>
+          </output>
+          <output>
+            <CanEdit>True</CanEdit>
+            <FileName>stddev.out</FileName>
+            <FileVersion>1.7</FileVersion>
+            <HelpContext>50700</HelpContext>
+            <HelpFile>scwin.chm</HelpFile>
+            <ImageFilename></ImageFilename>
+            <LongName>Standard Deviation</LongName>
+            <ShortCutVersion>2.7</ShortCutVersion>
+            <ShortName>StdDev</ShortName>
+            <Automatic>False</Automatic>
+            <IsDefaultOutput>False</IsDefaultOutput>
+            <Measurement>T_fintip</Measurement>
+            <OutputID>57</OutputID>
+            <OutputFileVersion>1.7</OutputFileVersion>
+            <outputlabels>
+              <string>T_fintip_STD</string>
+            </outputlabels>
+            <parentAttributeHandle>TCTemp</parentAttributeHandle>
+            <ParentSensorID>0</ParentSensorID>
+            <Resolution>45</Resolution>
+            <FSLabelChanged>False</FSLabelChanged>
+            <TableNumber>0</TableNumber>
+            <attributes/>
+          </output>
+        </outputs>
       </sensor>
     </sensors>
     <flags>

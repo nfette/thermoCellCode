@@ -20,7 +20,7 @@ import libcr23x
 import siteDefs
 
 
-programFilename = 'cr23x_programs/wind_tunnel_8channels.scw'
+programFilename = 'cr23x_programs/wind_tunnel_9channels.scw'
 timeStamp = datetime.datetime.now()
 timeStampStr = timeStamp.isoformat().replace(':','=')
 basename = "cr23x_outputs_"
@@ -32,7 +32,7 @@ if not os.path.isfile(outputFilename):
     with open(outputFilename,'w') as f:
         labels = libcr23x.getLabels(programFilename)
         nlocs = len(labels)
-        labels = ['TimeStamp']+labels
+        labels = ['ComputerTime','TimeStamp']+labels
         f.write(','.join(labels) + '\n')
 else:
     print("Opening {} and appending data".format(outputFilename))
@@ -96,7 +96,9 @@ with serial.Serial(port=port, baudrate=9600,
                 # now we must parse this per appendix C of cr23x manual
                 t,data3 = libcr23x.translateK(d, nlocs)
                 data4 = [t.isoformat()]+map(str,data3)
-                f.write(','.join(data4) + '\n')
+                tcomputer = datetime.datetime.now().isoformat()
+                data5 = [tcomputer] + data4
+                f.write(','.join(data5) + '\n')
                 time.sleep(0.8)
         except KeyboardInterrupt:
             pass
