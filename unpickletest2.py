@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 import pickle
-from keithley6517b_gamma import pvpanelType
+from keithley6517b_delta import pvpanelType
 import siteDefs
 import numpy as np
 import matplotlib.pyplot as plt
