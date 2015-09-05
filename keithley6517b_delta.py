@@ -17,6 +17,7 @@ import pickle
 import datetime
 import siteDefs
 import time
+import unpickletest2
 
 def getDevice():
     rm = visa.ResourceManager()
@@ -184,11 +185,11 @@ def main(date, outputPickle, outputPlot):
     with open(outputPickle, 'wb') as f:
         pickle.dump(calibration,f)
 
-    plt.cla()
-    plt.plot(I, Vout,'o')
-    plt.xlabel('DUT current ($I/$[amps])')
-    plt.ylabel('DUT voltage ($V/$[volts])')
-    plt.savefig(outputPlot)
+##    plt.cla()
+##    plt.plot(I, Vout,'o')
+##    plt.xlabel('DUT current ($I/$[amps])')
+##    plt.ylabel('DUT voltage ($V/$[volts])')
+##    plt.savefig(outputPlot)
 
 if __name__ == "__main__":
     # ohms
@@ -199,5 +200,5 @@ if __name__ == "__main__":
     outputPlot = "{}{}.png".format(basename, datestr)
     main(date, outputPickle, outputPlot)
     print("Saved: \n{}\n{}".format(outputPickle, outputPlot))
-
+    unpickletest2.main(outputPickle)
     

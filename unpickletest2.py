@@ -18,29 +18,45 @@ def main(myfile):
         npoints = 1+(data.stop-data.start)/data.step
         Vin = np.linspace(data.start,data.stop,npoints)
         Vout, time, iSample = data.data.T
+        Vcell = -Vout
         V_current_sensor = Vin - Vout
         I = V_current_sensor / data.r_current_sensor
-        Power = -Vout * I
+        Power = Vcell * I
 
         datestr = data.date.isoformat().replace(":","=")
         fig1 = siteDefs.data_base_dir + "power_vs_current/" + datestr + "_figure1.png"
         fig2 = siteDefs.data_base_dir + "power_vs_current/" + datestr + "_figure2.png"
-        
-        plt.figure(1)
-        plt.cla()
-        plt.plot(1e3 * I, 1e6 * Power, 'o-')
-        plt.xlabel('Current / mA')
-        plt.ylabel(r'Power / $\mathrm{\mu}$W')
-        plt.savefig(fig1)
 
-        plt.figure(2)
+        plt.figure(1,figsize=(20,8))
+        plt.subplot(121)
+        plt.cla()
+        plt.plot(I, Vcell,'o')
+        plt.xlabel('DUT current ($I/$[amps])')
+        plt.ylabel('DUT voltage ($V/$[volts])')
+        plt.xlim([-0.0,0.006])
+        plt.ylim([-0.0,0.02])
+        plt.title(data.date.isoformat())
+        #plt.savefig(fig1)
+        
+##        plt.figure(1)
+##        plt.cla()
+##        plt.plot(1e3 * I, 1e6 * Power, 'o-')
+##        plt.xlabel('Current / mA')
+##        plt.ylabel(r'Power / $\mathrm{\mu}$W')
+##        plt.savefig(fig1)
+
+        #plt.figure(2)
+        plt.subplot(122)
         plt.cla()
         plt.plot(1e3 * I, 1e6 * Power,'o-')
-        plt.xlim([0,1.1*max(1e3 * I[Power>0])])
-        plt.ylim([0,1.1*max(1e6 * Power)])
+        #plt.xlim([0,1.1*max(1e3 * I[Power>0])])
+        #plt.ylim([0,1.1*max(1e6 * Power)])
+        plt.xlim([0.0,6])
+        plt.ylim([0,25])
         plt.xlabel('Current / mA')
         plt.ylabel('Power / $\mu$W')
-        plt.savefig(fig2)
+        plt.title(data.date.isoformat())
+        plt.savefig(fig1)
 
         #plt.show()
         plt.close('all')
