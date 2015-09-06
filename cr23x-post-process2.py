@@ -31,7 +31,10 @@ data = np.genfromtxt(myfile, delimiter=",",names=True, usecols=range(2,cols),
 # because otherwise, if the data run through midnight, then they are disordered.
 d = startdate.date()
 def fun2(s):
-    t = datetime.datetime.strptime(s,"%Y-%m-%dT%H:%M:%S.%f")
+    try:
+        t = datetime.datetime.strptime(s,"%Y-%m-%dT%H:%M:%S.%f")
+    except:
+        t = datetime.datetime.strptime(s,"%Y-%m-%dT%H:%M:%S")
     return t
 
 dataT = np.genfromtxt(myfile, delimiter=",",names=True,
