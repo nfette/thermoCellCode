@@ -45,7 +45,7 @@ def main(myfile):
         ax.cla()
         ax.plot(1e3 * I, 1e6 * Power,'o-')
         ax.set_xlim([0.0,10])
-        ax.set_ylim([0,40])
+        ax.set_ylim([0,60])
         ax.set_xlabel('Cell current / mA')
         ax.set_ylabel('Power generated / $\mu$W')
         ax.set_title(data.date.isoformat())
