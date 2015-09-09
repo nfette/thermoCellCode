@@ -74,6 +74,8 @@ def main(myfile, savePlots=False):
         plt.savefig(myfile + ".fig3.png")
         plt.close()
 
+    return dataT, Th, Tc, Tave, Tdelta
+
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         myfile = sys.argv[1]

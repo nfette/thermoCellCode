@@ -12,8 +12,9 @@ import inset_subplot
 
 #TODO: make this a command line argument
 
-def main(myfile,savePlots=False):
-    print("Opening {} ...".format(myfile))
+def main(myfile,savePlots=False,verbose=False):
+    if verbose:
+        print("Opening {} ...".format(myfile))
     with open(myfile,'r') as f:
         data = pickle.load(f)
     #print(data)
@@ -29,6 +30,9 @@ def main(myfile,savePlots=False):
     Vcell = Vcell[-badIndices]
     Power = Vcell * I
     Pmax = Power.max()
+
+    # Linear fit the data
+    fit = np.polyfit(I, Vcell, 1)
 
     if savePlots:
         datestr = data.date.isoformat().replace(":","=")
@@ -64,16 +68,16 @@ def main(myfile,savePlots=False):
         #plt.show()
         plt.close('all')
         
-    return data, I, Power, Pmax
+    return data, I, Vcell, Power, Pmax, fit
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         # Read the argument
         for myfile in sys.argv[1:]:
-            main(myfile,True)
+            main(myfile,True,True)
     else:
         # Probably we can do the example
         print("Usage: python unpickletest2.py SomeIVfileData.pkl")
         print("Warning: No file given! I'll run default as example...")
         myfile = siteDefs.data_base_dir + "curve_traces/" + "2015-08-28T19=43=17.673000.pkl"
-        data, I, Vcell, Power, Pmax = main(myfile,True)
+        data, I, Vcell, Power, Pmax = main(myfile,True,True)

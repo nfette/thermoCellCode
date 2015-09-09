@@ -190,13 +190,17 @@ def main(date, outputPickle, outputPlot):
 ##    plt.ylabel('DUT voltage ($V/$[volts])')
 ##    plt.savefig(outputPlot)
 
-if __name__ == "__main__":
-    # ohms
-    date = datetime.datetime.now()
+def picklePlotFileNames(date):
     datestr = date.isoformat().replace(':','=')
     basename = siteDefs.data_base_dir + "curve_traces/"
     outputPickle = "{}{}.pkl".format(basename, datestr)
     outputPlot = "{}{}.png".format(basename, datestr)
+    return outputPickle, outputPlot
+
+if __name__ == "__main__":
+    # ohms
+    date = datetime.datetime.now()
+    outputPickle, outputPlot = picklePlotFileNames(date)
     main(date, outputPickle, outputPlot)
     print("Saved: \n{}\n{}".format(outputPickle, outputPlot))
     unpickletest2.main(outputPickle)
