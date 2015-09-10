@@ -80,4 +80,4 @@ if __name__ == "__main__":
         print("Usage: python unpickletest2.py SomeIVfileData.pkl")
         print("Warning: No file given! I'll run default as example...")
         myfile = siteDefs.data_base_dir + "curve_traces/" + "2015-08-28T19=43=17.673000.pkl"
-        data, I, Vcell, Power, Pmax = main(myfile,True,True)
+        data, I, Vcell, Power, Pmax, fit = main(myfile,True,True)
