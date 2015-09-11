@@ -58,10 +58,12 @@ def main(myfile, savePlots=False):
         plt.savefig(myfile + ".fig2.png")
         plt.close()
 
+        npoints = min(len(dataT),len(data))
+        print npoints
         plt.figure(figsize=(16,8))
         #plt.xticks(rotation=20)
         for name in data.dtype.names:    
-            plt.plot(dataT, data[name], label=name)
+            plt.plot(dataT[:npoints], data[name][:npoints], label=name)
         plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
         plt.gcf().autofmt_xdate()
