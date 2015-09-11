@@ -42,11 +42,11 @@ def main(myfile,savePlots=False,verbose=False):
         fig=plt.figure(1,figsize=(20,8))
         ax=fig.add_subplot(121)
         ax.cla()
-        ax.plot(1e3 * I, 1e3 * Vcell,'o-')
+        ax.plot(1e3 * I, 1e3 * Vcell,'o')
         ax.set_xlabel('Cell current / mA')
         ax.set_ylabel('Cell potential / mV')
         ax.set_xlim([-0.0,12])
-        ax.set_ylim([-0.0,24])
+        ax.set_ylim([-0.0,50])
         ax.set_title(data.date.isoformat())
         rect = [0.68,0.68,0.3,0.3]
         ax2 = inset_subplot.add_subplot_axes(ax,rect)
@@ -54,15 +54,15 @@ def main(myfile,savePlots=False,verbose=False):
         
         ax=fig.add_subplot(122)
         ax.cla()
-        ax.plot(1e3 * I, 1e6 * Power,'o-')
+        ax.plot(1e3 * I, 1e6 * Power,'o')
         ax.set_xlim([0.0,12])
-        ax.set_ylim([0,100])
+        ax.set_ylim([0,200])
         ax.set_xlabel('Cell current / mA')
         ax.set_ylabel('Power generated / $\mu$W')
         ax.set_title(data.date.isoformat())
         rect=[0.68,0.68,0.3,0.3]
-        ax2=inset_subplot.add_subplot_axes(ax,rect)
-        ax2.plot(1e3*I, 1e6*Power)
+        #ax2=inset_subplot.add_subplot_axes(ax,rect)
+        #ax2.plot(1e3*I, 1e6*Power)
         plt.savefig(fig1)
 
         #plt.show()
@@ -79,5 +79,5 @@ if __name__ == "__main__":
         # Probably we can do the example
         print("Usage: python unpickletest2.py SomeIVfileData.pkl")
         print("Warning: No file given! I'll run default as example...")
-        myfile = siteDefs.data_base_dir + "curve_traces/" + "2015-08-28T19=43=17.673000.pkl"
+        myfile = siteDefs.data_base_dir + "curve_traces/" + "2015-09-11T02=19=11.372000.pkl"
         data, I, Vcell, Power, Pmax, fit = main(myfile,True,True)
