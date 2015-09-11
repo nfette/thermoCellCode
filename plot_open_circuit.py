@@ -34,8 +34,9 @@ data = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
                      usecols=1)
 dataT = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
                      dtype="datetime64", converters={0:fun2}, usecols=0)
+npoints = min(len(data),len(dataT))
 Vcell = -data['Voltage']
-plt.plot(dataT,1e3 * Vcell)
+plt.plot(dataT[:npoints],1e3 * Vcell[:npoints])
 plt.xlabel('Time')
 plt.ylabel('Cell Voltage / mV')
 plt.ylim([0,50])
