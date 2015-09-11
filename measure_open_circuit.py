@@ -1,5 +1,7 @@
 # -*- coding: utf-8
 """
+Created: 2015-09-10 by Nicholas Fette
+
 This module is used as a stand-alone program to collect open-circuit
 voltage measurements over time from the thermocell. These data are
 appended into a text file for synchronous post-processing (visualization)
@@ -12,6 +14,12 @@ You must manually navigate the menus to set this correctly to the 24 hour
 time format in order to get the correct times after noon. In summary,
 the time stamp is worthless unless you know you have done this.
 
+TODO:
+* Reduce the frequency of samples by configuring multi-sample average
+
+CHANGES:
+* None yet
+
 """
 from __future__ import print_function
 import libkeithley6517b
@@ -19,14 +27,18 @@ import datetime
 import siteDefs
 import numpy as np
 import os.path
+import sys
 
 # Constants
 whenfmtfile = "%Y-%m-%dT%H=%M=%S.%f"
 whenfmtdata = "%Y-%m-%dT%H:%M:%S.%f"
 subfolder = "open_circuit_voltage/"
+fields = ("ComputerTime","Voltage","Unit")
 
 # Measure, write to file, loop
-def main(f):
+def main(f,headers=True):
+    if headers:
+        f.write(",".join(fields))
     rm,inst = libkeithley6517b.getDevice()
     print(inst.query("*IDN?"))
     print(inst.write("*RST; *CLS;"))
@@ -36,7 +48,7 @@ def main(f):
         while True:
             try:
                 when,val,unit=readOpenCircuitVoltage(inst)
-                print(val,unit)
+                print(when,val,unit)
                 whenstr = when.strftime(whenfmtdata)
                 f.write("{},{},{}\n".format(whenstr,val,unit))
             except KeyboardInterrupt:
@@ -82,8 +94,13 @@ def readOpenCircuitVoltage(inst):
     return when,val,unit
 
 if __name__ == "__main__":
-    when = datetime.datetime.now()
-    filename = getFilename(when)
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+        headers = False
+    else:
+        when = datetime.datetime.now()
+        filename = getFilename(when)
+        headers = True
     print(filename)
-    with open(filename,'w') as f:
-        main(f)
+    with open(filename,'a') as f:
+        main(f,headers)

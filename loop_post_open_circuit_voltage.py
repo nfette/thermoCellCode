@@ -3,11 +3,11 @@ import itertools
 import time
 
 """
-This is the code for temperature post-processing. It is fairly lazy.
+This is the code for open-circuit voltage post-processing. It is fairly lazy.
 """
 
-fileToRun = 'cr23x_post_process2.py'
-timeToWait = 300
+fileToRun = 'plot_open_circuit.py'
+timeToWait = 30
 a = range(timeToWait)
 a.reverse()
 for n in itertools.count():
