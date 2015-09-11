@@ -9,7 +9,7 @@ fileToRun = 'keithley6517b_delta.py'
 try:
     for n in itertools.count():
         execfile(fileToRun)
-        time.sleep(1.0)
+        time.sleep(5.0)
 except KeyboardInterrupt:
     pass
 
