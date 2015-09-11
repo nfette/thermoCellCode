@@ -44,3 +44,5 @@ plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignmen
 plt.gcf().autofmt_xdate()
 plt.gca().grid(True,axis='x')
 plt.savefig(fname + '.png')
+plt.close()
+
