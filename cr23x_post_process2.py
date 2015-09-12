@@ -58,6 +58,23 @@ def main(myfile, savePlots=False):
         plt.savefig(myfile + ".fig2.png")
         plt.close()
 
+        if npoints > 600:
+            plt.figure(figsize=(16,8))
+            #plt.xticks(rotation=20)
+            for name in data.dtype.names:    
+                plt.plot(dataT[npoints-300:npoints], data[name][npoints-300:npoints], label=name)
+            plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
+            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
+            plt.gcf().autofmt_xdate()
+            plt.gca().grid(True,axis='x')
+            plt.legend(loc='best')
+            plt.xlabel('Time')
+            plt.ylabel('Temperature $^\circ C$')
+            plt.ylim([0,130])
+            plt.title(basename)
+            plt.savefig(myfile + ".fig3.png")
+            plt.close()
+            
         npoints = min(len(dataT),len(data))
         print npoints
         plt.figure(figsize=(16,8))
@@ -73,8 +90,10 @@ def main(myfile, savePlots=False):
         plt.ylabel('Temperature $^\circ C$')
         plt.ylim([0,130])
         plt.title(basename)
-        plt.savefig(myfile + ".fig3.png")
+        plt.savefig(myfile + ".fig4.png")
         plt.close()
+
+        
 
     return dataT, Th, Tc, Tave, Tdelta
 

@@ -203,5 +203,5 @@ if __name__ == "__main__":
     outputPickle, outputPlot = picklePlotFileNames(date)
     main(date, outputPickle, outputPlot)
     print("Saved: \n{}\n{}".format(outputPickle, outputPlot))
-    unpickletest2.main(outputPickle)
+    unpickletest2.main(outputPickle,True)
     

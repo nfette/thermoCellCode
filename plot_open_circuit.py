@@ -36,6 +36,19 @@ dataT = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
                      dtype="datetime64", converters={0:fun2}, usecols=0)
 npoints = min(len(data),len(dataT))
 Vcell = -data['Voltage']
+
+if npoints > 2500:
+    plt.plot(dataT[npoints-2500:npoints],1e3 * Vcell[npoints-2500:npoints])
+    plt.xlabel('Time')
+    plt.ylabel('Cell Voltage / mV')
+    plt.ylim([0,50])
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
+    plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
+    plt.gcf().autofmt_xdate()
+    plt.gca().grid(True,axis='both')
+    plt.savefig(fname + 'fig1.png')
+    plt.close()
+
 plt.plot(dataT[:npoints],1e3 * Vcell[:npoints], '.', ms=1)
 plt.xlabel('Time')
 plt.ylabel('Cell Voltage / mV')
@@ -44,6 +57,8 @@ plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
 plt.gcf().autofmt_xdate()
 plt.gca().grid(True,axis='both')
-plt.savefig(fname + '.png')
+plt.savefig(fname + 'fig2.png')
 plt.close()
+
+
 
