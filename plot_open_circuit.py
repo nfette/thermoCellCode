@@ -38,7 +38,7 @@ npoints = min(len(data),len(dataT))
 Vcell = -data['Voltage']
 
 if npoints > 2500:
-    plt.plot(dataT[npoints-2500:npoints],1e3 * Vcell[npoints-2500:npoints])
+    plt.plot(dataT[npoints-2500:npoints],1e3 * Vcell[npoints-2500:npoints], '.')
     plt.xlabel('Time')
     plt.ylabel('Cell Voltage / mV')
     plt.ylim([0,50])

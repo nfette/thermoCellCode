@@ -28,6 +28,7 @@ import siteDefs
 import numpy as np
 import os.path
 import sys
+import itertools
 
 # Constants
 whenfmtfile = "%Y-%m-%dT%H=%M=%S.%f"
@@ -36,23 +37,24 @@ subfolder = "open_circuit_voltage/"
 fields = ("ComputerTime","Voltage","Unit")
 
 # Measure, write to file, loop
-def main(f,headers=True):
+def main(f,headers=True,npoints=None):
     if headers:
         f.write(",".join(fields))
+    if npoints:
+        counter = range(npoints)
+    else:
+        counter = itertools.count(0)
     rm,inst = libkeithley6517b.getDevice()
     print(inst.query("*IDN?"))
     print(inst.write("*RST; *CLS;"))
     syncClock(inst)
     configureOpenCircuitVoltage(inst)
     try:
-        while True:
-            try:
-                when,val,unit=readOpenCircuitVoltage(inst)
-                print(when,val,unit)
-                whenstr = when.strftime(whenfmtdata)
-                f.write("{},{},{}\n".format(whenstr,val,unit))
-            except KeyboardInterrupt:
-                break
+        for i in counter:
+            when,val,unit=readOpenCircuitVoltage(inst)
+            print(when,val,unit)
+            whenstr = when.strftime(whenfmtdata)
+            f.write("{},{},{}\n".format(whenstr,val,unit))
     finally:
         print(inst.write(":SYST:ZCH 1"))
         print(inst.write(":SYST:ZCH?"))

@@ -58,6 +58,9 @@ def main(myfile, savePlots=False):
         plt.savefig(myfile + ".fig2.png")
         plt.close()
 
+        npoints = min(len(dataT),len(data))
+        print npoints
+        
         if npoints > 600:
             plt.figure(figsize=(16,8))
             #plt.xticks(rotation=20)
@@ -75,8 +78,6 @@ def main(myfile, savePlots=False):
             plt.savefig(myfile + ".fig3.png")
             plt.close()
             
-        npoints = min(len(dataT),len(data))
-        print npoints
         plt.figure(figsize=(16,8))
         #plt.xticks(rotation=20)
         for name in data.dtype.names:    
