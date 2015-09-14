@@ -37,27 +37,37 @@ subfolder = "open_circuit_voltage/"
 fields = ("ComputerTime","Voltage","Unit")
 
 # Measure, write to file, loop
-def main(f,headers=True,npoints=None):
+def main(f,headers=True,npoints=None,device=None):
     if headers:
         f.write(",".join(fields))
+        
     if npoints:
         counter = range(npoints)
     else:
         counter = itertools.count(0)
-    rm,inst = libkeithley6517b.getDevice()
-    print(inst.query("*IDN?"))
-    print(inst.write("*RST; *CLS;"))
+
+    if device:
+        rm,inst = device
+    else:
+        rm,inst = libkeithley6517b.getDevice()
+        print("*OPC? > {}".format(inst.query("*OPC?")))
+        print("*IDN? > {}".format(inst.query("*IDN?")))
+    
+    inst.write("*RST; *CLS;")
     syncClock(inst)
     configureOpenCircuitVoltage(inst)
     try:
+        print("{:>10} {:<26} {:>15} {:<10}".format("i","when","E_OC","unit"))
         for i in counter:
             when,val,unit=readOpenCircuitVoltage(inst)
-            print(when,val,unit)
             whenstr = when.strftime(whenfmtdata)
+            print('\b'*80,end="")
+            print("{:>10} {:<26} {:>15} {:<10}".format(i,whenstr,val,unit),end="")
             f.write("{},{},{}\n".format(whenstr,val,unit))
     finally:
+        print()
         print(inst.write(":SYST:ZCH 1"))
-        print(inst.write(":SYST:ZCH?"))
+        print(inst.query(":SYST:ZCH?"))
         inst.close()
 
 # Where to open the file

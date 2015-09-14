@@ -18,19 +18,8 @@ import datetime
 import siteDefs
 import time
 import unpickletest2
-from libkeithley6517b import pvpanelType
-
-def getDevice():
-    rm = visa.ResourceManager()
-    result = rm.list_resources()
-    #print(result)
-    for name in result:
-        if name.find("GPIB") >= 0:
-            myGPIBname = name
-            break
-    inst = rm.open_resource(myGPIBname)
-    #print(inst.query("*IDN?"))
-    return rm,inst
+import libkeithley6517b
+import tabulate
 
 # These have to follow the order in the manual
 useful_string0 = ":FORM:ELEM READ,RNUM,UNIT,TST,STAT,VSO"
@@ -103,12 +92,12 @@ def runUpStairs(inst, start, stop, step, stim, shape):
     inst.write(useful_string3)
     inst.wait_for_srq()
     response = inst.query(useful_string4)
-    print(response)
+    #print(response)
     p = re.compile(r'(.+?)(\D*)$')
     theArray = []
     unitArray = []
     for b in response.split(','):
-        print(b)
+        #print(b)
         m = p.match(b)
         val,unit = m.groups()
         #if val.contains(':'):
@@ -117,7 +106,7 @@ def runUpStairs(inst, start, stop, step, stim, shape):
             theArray.append(float(val))
         except:
             theArray.append(-999)
-            print("Could not parse your number, '{}'".format(val))
+            #print("Could not parse your number, '{}'".format(val))
         unitArray.append(unit)
     result = np.array(theArray).reshape(shape)
     units = np.array(unitArray).reshape(shape)
@@ -133,27 +122,14 @@ def sourceVoltageReadVoltage(inst,Vin):
         # Make sure we don't leave it running, maybe
         inst.write(useful_string6.format(False))
 
-def main(date, outputPickle, outputPlot):
-    global rm, inst
-    rm,inst = getDevice()
-    print(inst.query("*IDN?"))
-    inst.write(':DISP:TEXT:DATA "Clinton <3 2016"')
+def main(date, outputPickle, outputPlot, device=None):
+    if device:
+        rm,inst = device
+    else:
+        rm,inst = libkeithley6517b.getDevice()
+        print(inst.query("*IDN?"))
+    inst.write(':DISP:TEXT:DATA "Start curve trace"')
     inst.write(':DISP:TEXT:STAT 1')
-    inst.write(':DISP:WIND2:TEXT:DATA "Loading   ..."')
-    inst.write(':DISP:WIND2:TEXT:STAT 1')
-    time.sleep(0.1)
-    inst.write(':DISP:WIND2:TEXT:DATA "Loading   ... platform"')
-    time.sleep(0.1)
-    inst.write(':DISP:WIND2:TEXT:DATA "Loading   ... electrons"')
-    time.sleep(0.1)
-    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e-"')
-    time.sleep(0.1)
-    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e-"')
-    time.sleep(0.1)
-    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e- e-"')
-    time.sleep(0.1)
-    inst.write(':DISP:WIND2:TEXT:DATA "electrons ... e- e- e- e-"')
-    
     time.sleep(0.1)
     inst.write(':DISP:TEXT:STAT 0')
     inst.write(':DISP:WIND2:TEXT:STAT 0')
@@ -164,32 +140,26 @@ def main(date, outputPickle, outputPlot):
     nfields = 3
     shape = npoints,nfields
     #inst.write(":SYST:TST:TYPE RTCL")
-    #We're not presently using this
-##    for n in range(5):
-##        sourceVoltageReadVoltage(inst,0)
-##    for n in range(5):
-##        sourceVoltageReadVoltage(inst,start)
-        
+
+    print("Stair sweep")
+    print(tabulate.tabulate(
+        [[start, stop, step, stim]],["start","stop","step","stim"]))
     result, units = runUpStairs(inst, start, stop, step, stim, shape)
-    #Vin = np.arange(start,stop,step)
-    Vin = np.linspace(start,stop,npoints)
-    #print(result)
-    Vout, timestamp, iSample = result.T
     R_current_sensor = 98.3 # ohms
-    V_current_sensor = Vin - Vout
-    I = V_current_sensor / R_current_sensor
-    calibration = pvpanelType(start, stop, step, stim, nfields,
+    calibration = libkeithley6517b.pvpanelType(start, stop, step, stim, nfields,
                                   units, result, R_current_sensor,
                                   date)
     with open(outputPickle, 'wb') as f:
         pickle.dump(calibration,f)
 
-##    plt.cla()
-##    plt.plot(I, Vout,'o')
-##    plt.xlabel('DUT current ($I/$[amps])')
-##    plt.ylabel('DUT voltage ($V/$[volts])')
-##    plt.savefig(outputPlot)
-
+    print(tabulate.tabulate(result,headers=map(str,units[0])))    
+    
+    inst.write(':DISP:TEXT:DATA "Done curve trace"')
+    inst.write(':DISP:TEXT:STAT 1')
+    time.sleep(0.1)
+    inst.write(':DISP:TEXT:STAT 0')
+    inst.write(':DISP:WIND2:TEXT:STAT 0')
+    
 def picklePlotFileNames(date):
     datestr = date.isoformat().replace(':','=')
     basename = siteDefs.data_base_dir + "curve_traces/"
@@ -197,11 +167,12 @@ def picklePlotFileNames(date):
     outputPlot = "{}{}.png".format(basename, datestr)
     return outputPickle, outputPlot
 
-if __name__ == "__main__":
-    # ohms
+def main2(device=None):
     date = datetime.datetime.now()
     outputPickle, outputPlot = picklePlotFileNames(date)
-    main(date, outputPickle, outputPlot)
+    main(date, outputPickle, outputPlot, device)
     print("Saved: \n{}\n{}".format(outputPickle, outputPlot))
     unpickletest2.main(outputPickle,True)
     
+if __name__ == "__main__":
+    main2()

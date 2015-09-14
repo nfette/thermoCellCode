@@ -1,14 +1,19 @@
+from __future__ import print_function
 import itertools
 import time
 import measure_open_circuit
+import libkeithley6517b
+import keithley6517b_delta
 import sys
+import datetime
 
 """
-This is the code for I-V curve tracing. It is fairly lazy.
+This is the code for I-V curve tracing and open circuit voltage measurement.
+It is fairly lazy.
 """
 
-fileToRun = 'keithley6517b_delta.py'
-
+# Check if the user wants to append to an existing data file,
+# else create a new one.
 if len(sys.argv) == 2:
     filename = sys.argv[1]
     headers = False
@@ -19,22 +24,11 @@ else:
 print(filename)
     
 try:
-    with open(filename,'a') as f:
-        for i in itertools.count():
-            measure_open_circuit.main(f,headers,1000)
-
-            for i in range(5):
-                try:
-                    time.sleep(5)
-                    execfile(fileToRun)
-                    time.sleep(5)
-                    break
-                except KeyboardInterrupt:
-                    raise
-                except:
-                    continue
-            
+    for i in itertools.count():
+        device = libkeithley6517b.getDevice()
+        keithley6517b_delta.main2(device)
+        with open(filename,'a') as f:
+            measure_open_circuit.main(f,headers,1000,device)            
 except KeyboardInterrupt:
     # This is not necessary, just makes for quieter quit
-    pass
-
+    print("Closing file:",filename)

@@ -86,20 +86,25 @@ with serial.Serial(port=port, baudrate=9600,
         print binascii.hexlify(j5)
         
         try:
-            for n in itertools.count():
-                print "[{}] Tx hey what are the numbers now?".format(n)
-                ser.write('K\r')
-                expectedBytes = libcr23x.calcKmessageLength(nlocs) # eg 58 for 11 fields
-                d = ser.read(expectedBytes)
-                dhex = binascii.hexlify(d)
-                #print " ".join(dhex[2*i:(2*i+2)] for i in range(58))
-                # now we must parse this per appendix C of cr23x manual
-                t,data3 = libcr23x.translateK(d, nlocs)
-                data4 = [t.isoformat()]+map(str,data3)
-                tcomputer = datetime.datetime.now().isoformat()
-                data5 = [tcomputer] + data4
-                f.write(','.join(data5) + '\n')
-                time.sleep(0.8)
+            n2 = 0
+            for n1 in itertools.count():
+                print
+                for n2 in range(n2,n2+100):
+                    tcomputer = datetime.datetime.now().isoformat()
+                    print '\b'*80,
+                    print "{} {} Tx hey what are the numbers now?".format(n2, tcomputer),
+                    ser.write('K\r')
+                    expectedBytes = libcr23x.calcKmessageLength(nlocs) # eg 58 for 11 fields
+                    d = ser.read(expectedBytes)
+                    dhex = binascii.hexlify(d)
+                    #print " ".join(dhex[2*i:(2*i+2)] for i in range(58))
+                    # now we must parse this per appendix C of cr23x manual
+                    t,data3 = libcr23x.translateK(d, nlocs)
+                    data4 = [t.isoformat()]+map(str,data3)
+                    data5 = [tcomputer] + data4
+                    f.write(','.join(data5) + '\n')
+                    time.sleep(0.8)
+                f.flush()
         except KeyboardInterrupt:
             pass
         
