@@ -39,6 +39,8 @@ def main(myfile, savePlots=False):
     # Some data processing
     alphaH, alphaC = 0.5, 0.5
     Th = alphaH * data['T_h_dry'] + (1. - alphaH) * data['T_h_wet']
+    # Temporary fix for bad T_h_wet data
+    Th = data['T_h_dry']
     Tc = alphaC * data['T_c_dry'] + (1. - alphaC) * data['T_c_wet']
     Tave = 0.5 * Th + 0.5 * Tc
     Tdelta = Th - Tc
@@ -64,7 +66,9 @@ def main(myfile, savePlots=False):
         if npoints > 600:
             plt.figure(figsize=(16,8))
             #plt.xticks(rotation=20)
-            for name in data.dtype.names:    
+            for name in data.dtype.names:
+                if name == "T_h_wet":
+                    continue
                 plt.plot(dataT[npoints-300:npoints], data[name][npoints-300:npoints], label=name)
             plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
@@ -80,7 +84,9 @@ def main(myfile, savePlots=False):
             
         plt.figure(figsize=(16,8))
         #plt.xticks(rotation=20)
-        for name in data.dtype.names:    
+        for name in data.dtype.names:
+            if name == "T_h_wet":
+                    continue
             plt.plot(dataT[:npoints], data[name][:npoints], label=name)
         plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
