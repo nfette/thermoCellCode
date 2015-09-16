@@ -7,7 +7,7 @@ This is the code for temperature post-processing. It is fairly lazy.
 """
 
 fileToRun = 'cr23x_post_process2.py'
-timeToWait = 300
+timeToWait = 15*60
 a = range(timeToWait)
 a.reverse()
 for n in itertools.count():

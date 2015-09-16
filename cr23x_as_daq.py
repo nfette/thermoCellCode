@@ -89,7 +89,7 @@ with serial.Serial(port=port, baudrate=9600,
             n2 = 0
             for n1 in itertools.count():
                 print
-                for n2 in range(n2,n2+100):
+                for n2 in range(n2+1,n2+101):
                     tcomputer = datetime.datetime.now().isoformat()
                     print '\b'*80,
                     print "{} {} Tx hey what are the numbers now?".format(n2, tcomputer),

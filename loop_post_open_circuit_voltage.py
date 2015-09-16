@@ -7,7 +7,7 @@ This is the code for open-circuit voltage post-processing. It is fairly lazy.
 """
 
 fileToRun = 'plot_open_circuit.py'
-timeToWait = 60
+timeToWait = 60*17
 a = range(timeToWait)
 a.reverse()
 for n in itertools.count():

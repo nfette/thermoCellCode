@@ -135,7 +135,7 @@ def main(date, outputPickle, outputPlot, device=None):
     inst.write(':DISP:WIND2:TEXT:STAT 0')
     
     inst.write(useful_string0)
-    start, stop, step, stim = -0.2, 1.0, 0.02, 0.01
+    start, stop, step, stim = -0.02, 0.1, 0.01, 0.01
     npoints = 1+(stop-start)/step
     nfields = 3
     shape = npoints,nfields

@@ -28,7 +28,7 @@ try:
         device = libkeithley6517b.getDevice()
         keithley6517b_delta.main2(device)
         with open(filename,'a') as f:
-            measure_open_circuit.main(f,headers,500,device)            
+            measure_open_circuit.main(f,headers,1000,device)            
 except KeyboardInterrupt:
     # This is not necessary, just makes for quieter quit
     print("Closing file:",filename)
