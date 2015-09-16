@@ -108,6 +108,6 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         myfile = sys.argv[1]
     else:
-        myfile = "cr23x_outputs_2015-09-13T19=49=03.865000.dat"
+        myfile = "cr23x_outputs_2015-09-15T20=50=29.141000.dat"
         myfile = "{}{}".format(siteDefs.data_base_dir, myfile)
     main(myfile,True)

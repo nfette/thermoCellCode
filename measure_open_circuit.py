@@ -39,7 +39,7 @@ fields = ("ComputerTime","Voltage","Unit")
 # Measure, write to file, loop
 def main(f,headers=True,npoints=None,device=None):
     if headers:
-        f.write(",".join(fields))
+        f.write(",".join(fields)+"\n")
         
     if npoints:
         counter = range(npoints)
@@ -89,7 +89,7 @@ def syncClock(inst):
         *datetime.datetime.now().strftime("%Y,%m,%d;%H,%M,%S").split(";")))
 
 def configureOpenCircuitVoltage(inst):
-    inst.write(":STAT:MEAS:PRES")
+    inst.write(":STAT:PRES")
     inst.write(":SYST:ZCH 1")
     inst.write(":CONF:VOLT:DC")
     inst.write(":FORM:ELEM READ,UNIT")
