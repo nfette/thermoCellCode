@@ -16,6 +16,8 @@ from collections import namedtuple
 import re
 import datetime
 import pickle
+import numpy as np
+import tabulate
 
 """
 Actually this should go somewhere else but meanwhile it's here.
@@ -164,6 +166,36 @@ def parseTraceData(format_flags, s):
     #print s
     return aseq
 
+def stairs2(inst,V=np.linspace(0,1)):
+    # Configure measuring
+    inst.write(":SENS:FUNC 'VOLT'")
+    # Turn off zero check
+    inst.write(":SYST:ZCH 0")
+    # Start measuring
+    inst.write(":TRIG:DEL 0")
+    inst.write(":INIT:CONT 1")
+    #inst.write(":INIT:IMM")
+    # Turn on voltage source
+    inst.write(":SOUR:VOLT {}".format(V[0]))
+    inst.write(":OUTP 1")
+    # Get sample measurement and read the units
+    inst.write("FORM:ELEM READ,RNUM,UNIT,TST,VSO")
+    response = inst.query(":SENS:DATA:FRES?")
+    units=[b for a,b in map(splitNumUnit,response.split(','))]
+    print(units)
+    result = []
+    try:
+        for v in V:
+            inst.write(":SOUR:VOLT {}".format(v))
+            response=inst.query(":SENS:DATA:FRES?")
+            vals = [float(a) for a,b in map(splitNumUnit,response.split(','))]
+            result.append(vals)
+            print(vals)
+    finally:
+        inst.write(":OUTP 0")
+        inst.write(":SYST:ZCH 1")
+    return units,result
+
 """
     Unit tests!
 """
@@ -192,6 +224,16 @@ def main():
     unitTestParseRead()
     unitTestParseSeqData()
 
+def main2():
+    V=np.linspace(0,1)
+    B=np.linspace(1,0)
+    V=np.concatenate([V,B])
+    
+    rm,inst = getDevice()
+    units,vals=stairs2(inst,V)
+    return units,vals
+    
 if __name__ == "__main__":
-    main()
+    #main()
+    units,vals=main2()
     
