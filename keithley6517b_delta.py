@@ -135,7 +135,7 @@ def main(date, outputPickle, outputPlot, device=None):
     inst.write(':DISP:WIND2:TEXT:STAT 0')
     
     inst.write(useful_string0)
-    start, stop, step, stim = -0.02, 0.1, 0.01, 0.01
+    start, stop, step, stim = -0.05, 0.2, 0.005, 0.01
     npoints = 1+(stop-start)/step
     nfields = 3
     shape = npoints,nfields
@@ -145,7 +145,10 @@ def main(date, outputPickle, outputPlot, device=None):
     print(tabulate.tabulate(
         [[start, stop, step, stim]],["start","stop","step","stim"]))
     result, units = runUpStairs(inst, start, stop, step, stim, shape)
-    R_current_sensor = 98.3 # ohms
+    # If copper electolyte...
+    #R_current_sensor = 98.3 # ohms
+    # If Cu+EDTA electrolyte...
+    R_current_sensor = 972.0 # ohms
     calibration = libkeithley6517b.pvpanelType(start, stop, step, stim, nfields,
                                   units, result, R_current_sensor,
                                   date)
@@ -155,6 +158,7 @@ def main(date, outputPickle, outputPlot, device=None):
     print(tabulate.tabulate(result,headers=map(str,units[0])))    
     
     inst.write(':DISP:TEXT:DATA "Done curve trace"')
+    inst.write(':DISP:TEXT:DATA "Hi, Jon!"')
     inst.write(':DISP:TEXT:STAT 1')
     time.sleep(0.1)
     inst.write(':DISP:TEXT:STAT 0')
