@@ -29,6 +29,7 @@ import numpy as np
 import os.path
 import sys
 import itertools
+import time
 
 # Constants
 whenfmtfile = "%Y-%m-%dT%H=%M=%S.%f"
@@ -59,6 +60,13 @@ def main(f,headers=True,npoints=None,device=None):
     try:
         print("{:>10} {:<26} {:>15} {:<10}".format("i","when","E_OC","unit"))
         for i in counter:
+            # There appears to be a problem if the sensor is left on too long.
+            if i > 0 and not i%100:
+                print('\b'*20,end="")
+                print("Zero check. Wait...",end="")
+                inst.write(":SYST:ZCH 1")
+                time.sleep(1)
+                inst.write(":SYST:ZCH 0")
             when,val,unit=readOpenCircuitVoltage(inst)
             whenstr = when.strftime(whenfmtdata)
             print('\b'*80,end="")
