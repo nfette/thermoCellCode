@@ -51,10 +51,10 @@ def main(f,headers=True,npoints=None,device=None):
         rm,inst = device
     else:
         rm,inst = libkeithley6517b.getDevice()
+        libkeithley6517b.initDevice(inst)
         print("*OPC? > {}".format(inst.query("*OPC?")))
         print("*IDN? > {}".format(inst.query("*IDN?")))
     
-    inst.write("*RST; *CLS;")
     syncClock(inst)
     configureOpenCircuitVoltage(inst)
     try:
@@ -101,13 +101,15 @@ def configureOpenCircuitVoltage(inst):
     inst.write(":SYST:ZCH 1")
     inst.write(":CONF:VOLT:DC")
     inst.write(":FORM:ELEM READ,UNIT")
+    inst.write(":TRIG:DEL 0.5")
+    inst.write(":INIT:CONT 1")
     #inst.write(":FORM:ELEM READ,UNIT,TST"))
     #inst.write(":SYST:TST:TYPE RTClock"))
     inst.write(":SYST:ZCH 0")
     
 def readOpenCircuitVoltage(inst):
     when = datetime.datetime.now()
-    response = inst.query(":READ?")
+    response = inst.query(":SENS:DATA:FRES?")
     tags = response.strip().split(',')
     val,unit = libkeithley6517b.splitNumUnit(tags[0])
     val = float(val)

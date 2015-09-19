@@ -102,6 +102,9 @@ seqFormat = formatFlags(True,False,True,True,True,True,False,False,False)
 numUnitPattern = re.compile(r'(.+?)(\D*)$')
 def splitNumUnit(s):
     return numUnitPattern.match(s).groups()
+def splitAndSwapNumUnit2(s):
+    n,u = numUnitPattern.match(s).groups()
+    return u, float(n)
 
 readStruct = namedtuple('ReadStruct',
                         ['reading','status','readunit',
@@ -196,6 +199,53 @@ def stairs2(inst,V=np.linspace(0,1)):
         inst.write(":SYST:ZCH 1")
     return units,result
 
+def stairs3(inst,VSupplyLimit=1.0,VSenseThreshold=1e-3):
+    Vin = 0
+    # Configure measuring
+    inst.write(":SENS:FUNC 'VOLT'")
+    # Turn off zero check
+    inst.write(":SYST:ZCH 0")
+    # Start measuring
+    inst.write(":TRIG:DEL 0")
+    inst.write(":INIT:CONT 1")
+    #inst.write(":INIT:IMM")
+    # Turn on voltage source
+    inst.write(":SOUR:VOLT {}".format(Vin))
+    inst.write(":OUTP 1")
+    # Get sample measurement and read the units
+    inst.write("FORM:ELEM READ,RNUM,UNIT,TST,VSO")
+    response = inst.query(":SENS:DATA:FRES?").strip()
+    units = [b for a,b in map(splitNumUnit,response.split(','))]
+    vals = [float(a) for a,b in map(splitNumUnit,response.split(','))]
+    Vout = vals[0]
+    print(units, Vout, Vin)
+    result = []
+    try:
+        while (abs(Vout) > VSenseThreshold) and (abs(Vin) < VSupplyLimit):
+            Vold = Vout
+            inst.write(":SOUR:VOLT {}".format(Vin))
+            response=inst.query(":SENS:DATA:FRES?")
+            vals = tuple([float(a) for a,b in map(splitNumUnit,response.split(','))])
+            print(vals)
+            Vout = vals[0]
+            result.append(vals)
+            if np.sign(Vout) != np.sign(Vold):
+                break
+            else:
+                Vin -= 0.01 * np.sign(Vout)
+    finally:
+        inst.write(":OUTP 0")
+        inst.write(":SYST:ZCH 1")
+    dtype = np.dtype({'names':units,'formats':[np.double]*len(units)})
+    result = np.array(result,dtype=dtype)
+    return result
+
+# synchronize the clock
+def syncClock(inst):
+    # Synchronize the clocks.
+    inst.write(":SYST:DATE {}; :SYST:TIME {};".format(
+        *datetime.datetime.now().strftime("%Y,%m,%d;%H,%M,%S").split(";")))
+    
 """
     Unit tests!
 """
@@ -225,15 +275,22 @@ def main():
     unitTestParseSeqData()
 
 def main2():
-    V=np.linspace(0,1)
-    B=np.linspace(1,0)
-    V=np.concatenate([V,B])
-    
+    VSupplyLimit,VSenseThreshold = 1.0,1e-3
     rm,inst = getDevice()
-    units,vals=stairs2(inst,V)
-    return units,vals
+    vals=stairs3(inst,VSupplyLimit,VSenseThreshold)
+    import matplotlib.pyplot as plt
+    i,j='Vsrc','VDC'
+    R = 972.
+    Vso = vals[i]
+    I = Vso / R
+    Vcell = -vals[j]
+    plt.plot(I,Vcell,'.')
+    plt.xlabel("Cell Current")
+    plt.ylabel("Cell potential")
+    plt.show()
+    return vals
     
 if __name__ == "__main__":
     #main()
-    units,vals=main2()
+    vals=main2()
     

@@ -1,0 +1,6 @@
+{
+	"Rsensor":972,
+	"Rbypass":1e300,
+	"VSourceLimit":1,
+	"Waits":100
+}

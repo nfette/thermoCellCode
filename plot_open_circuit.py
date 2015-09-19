@@ -29,9 +29,21 @@ def fun2(s):
     except:
         t = datetime.datetime.strptime(s,"%Y-%m-%dT%H:%M:%S")
     return t
+
+with open(fname,'r') as f:
+    line = f.readline()
+names = line.strip().split(',')
+
 dtype='<M8[s],<f8,S3'
-data = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
+if len(names)==3:
+    data = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
                      usecols=1)
+elif len(names)==5:
+    data = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
+                     usecols=[1,2,3,4])
+elif len(names)==6:
+    data = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
+                     usecols=[1,2,3,4,5])
 dataT = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
                      dtype="datetime64", converters={0:fun2}, usecols=0)
 npoints = min(len(data),len(dataT))
