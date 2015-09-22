@@ -53,7 +53,7 @@ if npoints > 2500:
     plt.plot(dataT[npoints-2500:npoints],1e3 * Vcell[npoints-2500:npoints], '.')
     plt.xlabel('Time')
     plt.ylabel('Cell Voltage / mV')
-    plt.ylim([-30,100])
+    plt.ylim([-200,200])
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
     plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
     plt.gcf().autofmt_xdate()
@@ -64,7 +64,7 @@ if npoints > 2500:
 plt.plot(dataT[:npoints],1e3 * Vcell[:npoints], '.', ms=1)
 plt.xlabel('Time')
 plt.ylabel('Cell Voltage / mV')
-plt.ylim([-30,100])
+plt.ylim([-200,200])
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
 plt.gcf().autofmt_xdate()
@@ -73,4 +73,24 @@ plt.savefig(fname + 'fig2.png')
 plt.close()
 
 
+Vsrc = data['Vsource']
+Vread = data['Voltage']
+Rsensor = data['Rsensor']
+Rbypass = data['Rbypass']
+Vsens = Vsrc - Vread
+Vcell = -Vread
+I = Vsens / Rsensor + Vcell/Rbypass
+P = Vcell * I
+P_max = P.max()
+I_sc = abs(I).max()
+plt.plot(1e3*I[npoints-2500:npoints], 1e3*Vcell[npoints-2500:npoints],'.')
+plt.ylabel("Voltage / mV")
+plt.xlabel("Current / mA")
+plt.savefig(fname + "fig3.png")
+plt.close()
 
+plt.plot(1e3*I[npoints-2500:npoints], 1e6*P[npoints-2500:npoints],'.')
+plt.xlabel("Current / mA")
+plt.ylabel("Power / uW")
+plt.savefig(fname + "fig4.png")
+plt.close()

@@ -101,7 +101,7 @@ def loopy(inst,config,outputFile,show=False,showHeads=True):
             print('\b'*80,end="")
             print(showfmt.format(
                 0, when.strftime("%H:%M:%S.%f"),
-                Vsrc, 1e3*Vread, 1e3*I, 1e6*P,
+                Vsrc, 1e3*Vcell, 1e3*I, 1e6*P,
                 1e3*I_sc,1e6*P_max),end="")
             # To continue or not to continue
             if np.sign(Vread) != np.sign(Vold):
@@ -155,7 +155,7 @@ def main(config, f, headers=True,nsweeps=None,device=None):
                 print('\b'*80,end="")
                 print(showfmt.format(
                     j, when.strftime("%H:%M:%S.%f"),
-                    Vsrc, 1e3*Vread, 1e3*I, 1e6*P,
+                    Vsrc, 1e3*Vcell, 1e3*I, 1e6*P,
                     1e3*I_sc,1e6*P_max),end="")
             # Curve trace
             when,E_oc,I_sc,P_max=loopy(inst,config,f,True,False)
