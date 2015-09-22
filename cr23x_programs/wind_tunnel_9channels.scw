@@ -22,7 +22,7 @@
       <string>11,T_amb_2,0,0,0,0</string>
       <string>12,T_fintip,0,0,0,0</string>
     </inlocstringlist>
-    <Modified>True</Modified>
+    <Modified>False</Modified>
     <storagerates>
       <string>1</string>
       <string>1440</string>
