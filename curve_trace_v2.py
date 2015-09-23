@@ -116,6 +116,11 @@ def loopy(inst,config,outputFile,show=False,showHeads=True):
     return when,E_oc,I_sc,P_max
 
 def main(config, f, headers=True,nsweeps=None,device=None):
+    print("""Please verify the following. According to config file,
+Sensing resistor R = {} ohms
+ Bypass resistor R = {} ohms""".format(config["Rsensor"],
+                                       config["Rbypass"]))
+
     if headers:
         f.write(",".join(fields)+"\n")
         

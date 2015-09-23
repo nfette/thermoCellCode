@@ -47,32 +47,6 @@ elif len(names)==6:
 dataT = np.genfromtxt(fname, delimiter=",", names=True, skip_footer=3,
                      dtype="datetime64", converters={0:fun2}, usecols=0)
 npoints = min(len(data),len(dataT))
-Vcell = -data['Voltage']
-
-if npoints > 2500:
-    plt.plot(dataT[npoints-2500:npoints],1e3 * Vcell[npoints-2500:npoints], '.')
-    plt.xlabel('Time')
-    plt.ylabel('Cell Voltage / mV')
-    plt.ylim([-200,200])
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
-    plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
-    plt.gcf().autofmt_xdate()
-    plt.gca().grid(True,axis='both')
-    plt.savefig(fname + 'fig1.png')
-    plt.close()
-
-plt.plot(dataT[:npoints],1e3 * Vcell[:npoints], '.', ms=1)
-plt.xlabel('Time')
-plt.ylabel('Cell Voltage / mV')
-plt.ylim([-200,200])
-plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
-plt.gcf().autofmt_xdate()
-plt.gca().grid(True,axis='both')
-plt.savefig(fname + 'fig2.png')
-plt.close()
-
-
 Vsrc = data['Vsource']
 Vread = data['Voltage']
 Rsensor = data['Rsensor']
@@ -81,15 +55,50 @@ Vsens = Vsrc - Vread
 Vcell = -Vread
 I = Vsens / Rsensor + Vcell/Rbypass
 P = Vcell * I
+# Not particularly useful
 P_max = P.max()
 I_sc = abs(I).max()
-plt.plot(1e3*I[npoints-2500:npoints], 1e3*Vcell[npoints-2500:npoints],'.')
+
+fig, (ax1, ax2) = plt.subplots(2,1,sharex=True)
+ax1.plot(dataT[max(0,npoints-2500):npoints],
+         1e3 * Vcell[max(0,npoints-2500):npoints], 'b.')
+ax1.set_xlabel('Time')
+ax1.set_ylabel('Cell Voltage / mV')
+#ax.set_ylim([-200,200])
+ax1.grid(True,axis='both')
+
+ax2.plot(dataT[max(0,npoints-2500):npoints],
+         1e3 * I[max(0,npoints-2500):npoints], 'r.')
+ax2.set_ylabel('Cell current / mA')
+ax2.grid(True,axis='both')
+ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
+plt.setp( ax2.xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
+fig.autofmt_xdate()
+
+plt.savefig(fname + 'fig1.png')
+plt.close()
+
+if npoints > 2500:
+    plt.plot(dataT[:npoints],1e3 * Vcell[:npoints], '.', ms=1)
+    plt.xlabel('Time')
+    plt.ylabel('Cell Voltage / mV')
+    plt.ylim([-200,200])
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+    plt.setp( plt.gca().xaxis.get_majorticklabels(), rotation=20, horizontalalignment='right' )
+    plt.gcf().autofmt_xdate()
+    plt.gca().grid(True,axis='both')
+    plt.savefig(fname + 'fig2.png')
+    plt.close()
+
+plt.plot(1e3*I[max(0,npoints-2500):npoints],
+         1e3*Vcell[max(0,npoints-2500):npoints],'.')
 plt.ylabel("Voltage / mV")
 plt.xlabel("Current / mA")
 plt.savefig(fname + "fig3.png")
 plt.close()
 
-plt.plot(1e3*I[npoints-2500:npoints], 1e6*P[npoints-2500:npoints],'.')
+plt.plot(1e3*I[max(0,npoints-2500):npoints],
+         1e6*P[max(0,npoints-2500):npoints],'.')
 plt.xlabel("Current / mA")
 plt.ylabel("Power / uW")
 plt.savefig(fname + "fig4.png")
