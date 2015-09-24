@@ -8,11 +8,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import sys
+import re
+
+
+whenfmtfile = "%Y-%m-%dT%H=%M=%S.%f"
+whenfmtdata = "%Y-%m-%dT%H:%M:%S.%f"
+dataDir = 'temperature_data/'
+plotsDir = 'temperature_plots/'
 
 def main(myfile, savePlots=False):
     basename = os.path.basename(myfile)
     startdate = datetime.datetime.strptime(basename,
                                            "cr23x_outputs_%Y-%m-%dT%H=%M=%S.%f.dat")
+    wherePlots = "{}{}{}".format(siteDefs.data_base_dir,plotsDir,basename)
 
     with open(myfile, 'r') as f:
         line1 = f.readline()
@@ -50,14 +58,14 @@ def main(myfile, savePlots=False):
         plt.xlabel('Cold electrode, $^\circ C$')
         plt.ylabel('Hot electrode, $^\circ C$')
         plt.title(basename)
-        plt.savefig(myfile + ".fig1.png")
+        plt.savefig(wherePlots + ".fig1.png")
         plt.close()
 
         plt.plot(Tave, Tdelta, 'o')
         plt.xlabel('Average temperature, $^\circ C$')
         plt.ylabel('Temperature difference, $^\circ C$')
         plt.title(basename)
-        plt.savefig(myfile + ".fig2.png")
+        plt.savefig(wherePlots + ".fig2.png")
         plt.close()
 
         npoints = min(len(dataT),len(data))
@@ -79,7 +87,7 @@ def main(myfile, savePlots=False):
             plt.ylabel('Temperature $^\circ C$')
             plt.ylim([0,130])
             plt.title(basename)
-            plt.savefig(myfile + ".fig3.png")
+            plt.savefig(wherePlots + ".fig3.png")
             plt.close()
             
         plt.figure(figsize=(16,8))
@@ -97,17 +105,35 @@ def main(myfile, savePlots=False):
         plt.ylabel('Temperature $^\circ C$')
         plt.ylim([0,130])
         plt.title(basename)
-        plt.savefig(myfile + ".fig4.png")
+        plt.savefig(wherePlots + ".fig4.png")
         plt.close()
 
-        
-
     return dataT, Th, Tc, Tave, Tdelta
+
+def getWhenFromFilename(fname):
+    stuff = os.path.splitext(fname)[0]
+    m = re.match('cr23x_outputs_(.+)',stuff)
+    whenstr = m.group(1)
+    when = datetime.datetime.strptime(whenstr, whenfmtfile)
+    return when
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         myfile = sys.argv[1]
     else:
-        myfile = "cr23x_outputs_2015-09-21T20=21=39.466000.dat"
-        myfile = "{}{}".format(siteDefs.data_base_dir, myfile)
+        where = "{}{}".format(siteDefs.data_base_dir,dataDir)
+        files = os.listdir(where)
+        whens = dict()
+        for fname in files:
+            try:
+                whens[getWhenFromFilename(fname)] = fname
+            except:
+                pass
+        keys=whens.keys()
+        keys.sort()
+        mostrecent = keys[-1]
+        myfile=whens[mostrecent]
+        #myfile = "cr23x_outputs_2015-09-23T10=00=56.923000.dat"
+        
+        myfile = "{}{}".format(where, myfile)
     main(myfile,True)

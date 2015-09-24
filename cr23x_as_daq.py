@@ -15,25 +15,35 @@ import binascii
 import string
 import os
 import itertools
-
 import libcr23x
 import siteDefs
+import sys
 
 
 programFilename = 'cr23x_programs/wind_tunnel_9channels.scw'
-timeStamp = datetime.datetime.now()
-timeStampStr = timeStamp.isoformat().replace(':','=')
-basename = "cr23x_outputs_"
-outputFilename = "{}{}{}.dat".format(siteDefs.data_base_dir, basename, timeStampStr)
 port = 'com3'
+dataDir = 'temperature_data/'
 
+try:
+    outputFilename = sys.argv[1]
+except:
+    timeStamp = datetime.datetime.now()
+    timeStampStr = timeStamp.isoformat().replace(':','=')
+    basename = "cr23x_outputs_"
+    outputFilename = "{}{}{}{}.dat".format(
+        siteDefs.data_base_dir,
+        dataDir,
+        basename,
+        timeStampStr)
+
+labels = libcr23x.getLabels(programFilename)
+nlocs = len(labels)
+        
 if not os.path.isfile(outputFilename):
     print("Creating {} for headers and data".format(outputFilename))
-    with open(outputFilename,'w') as f:
-        labels = libcr23x.getLabels(programFilename)
-        nlocs = len(labels)
-        labels = ['ComputerTime','TimeStamp']+labels
-        f.write(','.join(labels) + '\n')
+    with open(outputFilename,'w') as f:        
+        moreLabels = ['ComputerTime','TimeStamp']+labels
+        f.write(','.join(moreLabels) + '\n')
 else:
     print("Opening {} and appending data".format(outputFilename))
 
