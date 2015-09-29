@@ -1,0 +1,9 @@
+{
+	"current_sensor_1": 98.2700,
+	"current_sensor_2": 972.02,
+	"current_sensor_3": 4614.94,
+	"bypass_single": 1.146,
+	"bypass_parallel_2": 0.656,
+	"bypass_parallel_3": 0.473,
+	"bypass_series_2": 2.144
+}
