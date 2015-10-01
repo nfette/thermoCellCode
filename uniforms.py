@@ -1,3 +1,25 @@
+"""
+uniforms.py
+
+==Description==
+Measurement:
+    N/A
+Inputs:
+    For first two trials: the data files created by
+        keithley6517b_delta.py
+        measure_open_circuit.py
+        (these are called together by loop_keithley.py)
+    For later trials: the data files created by
+        curve_trace_v2.py
+Post-processing:
+    No calculations, but stitching of overlapping time series,
+    replacement of constants with updated measurements,
+    and insertion of bypass resistor data previously recorded by hand.
+
+==Change log==
+    2015-09-28, created by Nicholas Fette
+"""
+
 # 2015-09-10
 # Trial 1, CuSO4 with plain surface electrodes
 # open_circuit_voltage/2015-09-10T21=46=34.891000.dat
@@ -8,7 +30,7 @@
 # Events:
 # 2015-09-11T19:49:10.193000: bypass insert 1 ohm nominal
 # 2015-09-11T20:06:44.344000: bypass insert 1/2 ohm nominal
-# 2015-09-11T20:11:10.040000: bypass insert 1/3 ohm nominal
+# 2015-09-11T20:11:09.540000: bypass insert 1/3 ohm nominal
 # 2015-09-11T20:12:58.712000: bypass removed
 # 2015-09-11T21:20:33.491000: bypass insert 1 ohm nominal
 # 2015-09-11T21:22:28.863000: bypass insert 1/2 ohm nominal
@@ -72,26 +94,28 @@ dtype2=[('ComputerTime','<M8[us]'),
         ('Rsensor','<f8'),
         ('Rbypass','<f8'),
         ('OCcount','<i4')]
-        
+
 # Old heterogenous databases
 # For these files, need to:
 # 1. Generate time stamps for all data points within each curve trace
 # 2. Stitch together the open circuit files and curve traces files.
 # 3. Add data about bypass resistor
 # 4. Save the data.
-todolist = [('open_circuit_voltage/2015-09-13T18=38=23.924000.dat',
-             datetime.datetime(2015,9,13,18,38,23),
-             datetime.datetime(2015,9,15,19,57,41)),
-            ('open_circuit_voltage/2015-09-10T21=46=34.891000.dat',
+todolist = [('open_circuit_voltage/2015-09-10T21=46=34.891000.dat',
              datetime.datetime(2015,9,11,2,17,58),
-             datetime.datetime(2015,9,13,14,12,56))]
+             datetime.datetime(2015,9,13,14,12,56),
+             False, True),
+            ('open_circuit_voltage/2015-09-13T18=38=23.924000.dat',
+             datetime.datetime(2015,9,13,18,38,23),
+             datetime.datetime(2015,9,15,19,57,41),
+             True, False),]
 # Need to record the bypass resistor history.
 resFile = "IVconfigs/resistors.txt"
 with open(resFile,'r') as fres:
     resistors = json.load(fres)
 bpKey = ["2015-09-11T19:49:10.193000",
     "2015-09-11T20:06:44.344000",
-    "2015-09-11T20:11:10.040000",
+    "2015-09-11T20:11:09.540000",
     "2015-09-11T20:12:58.712000",
     "2015-09-11T21:20:33.491000",
     "2015-09-11T21:22:28.863000",
@@ -110,22 +134,33 @@ bpKey = map(fun,bpKey)
 bypassIntervals=[(bpKey[0],bpKey[1],"bypass_single"),
                  (bpKey[1],bpKey[2],"bypass_parallel_2"),
                  (bpKey[2],bpKey[3],"bypass_parallel_3"),
-                 (bpKey[4],bpKey[5],"bypass_single"),
-                 (bpKey[5],bpKey[6],"bypass_parallel_2"),
-                 (bpKey[7],bpKey[8],"bypass_single"),
-                 (bpKey[9],bpKey[10],"bypass_single"),
-                 (bpKey[10],bpKey[11],"bypass_parallel_2"),
+                 (bpKey[4],bpKey[5],"bypass_parallel_2"),
+                 (bpKey[5],bpKey[6],"bypass_parallel_3"),
+                 (bpKey[7],bpKey[8],"bypass_parallel_2"),
+                 (bpKey[9],bpKey[10],"bypass_parallel_2"),
+                 (bpKey[10],bpKey[11],"bypass_single"),
                  (bpKey[12],bpKey[13],"bypass_single"),
                  (bpKey[14],bpKey[15],"bypass_single"),
                  ]
 
 def main1():
+    global ocfname,ocDataRaw
     # Collect stats about Keithley's staircase sweep timing
     tSample1 = []
     tSampleD = []
     
-    for (ocFile, traceStart, traceStop) in todolist:
+    for (ocFile, traceStart, traceStop, bWriteStats, bReadStats) in todolist:
         print "Merging data for trial: {}".format(ocFile)
+
+        if bReadStats:
+            try:
+                with open('curveTraceTimingStats.pkl','r') as fstats:
+                    curveTraceTimingStats = json.load(fstats)
+                    tSample1Mean = curveTraceTimingStats["tSample1Mean"]
+                    tSampleDMean = curveTraceTimingStats["tSampleDMean"]
+            except:
+                print "Missing stats for this trial, try running again later."
+                continue
 
         # Read the ocFile
         ocfname = "{}{}".format(siteDefs.data_base_dir,ocFile)
@@ -192,6 +227,11 @@ def main1():
 
         print "Done looping through all the curve trace files."
         tSample1Mean,tSampleDMean = np.mean(tSample1),np.mean(tSampleD)
+        
+        if bWriteStats:
+            curveTraceTimingStats = {"tSample1Mean":tSample1Mean, "tSampleDMean":tSampleDMean}
+            with open('curveTraceTimingStats.pkl','w') as fstats:
+                json.dump(curveTraceTimingStats,fstats)
         print "tSample1Mean = {}".format(tSample1Mean)
         print "tSampleDMean = {}".format(tSampleDMean)
         print "min(stims) = {}".format(min(stims))
@@ -211,7 +251,6 @@ def main1():
                 f.write("{}\n".format(','.join([i.__str__() for i in row])))
         print "Done with that."
 
-
 # Newer homogeneous databases
 # For these, we just need to
 # 1. Overwrite the time stamp with time zone info for easy reading
@@ -226,9 +265,7 @@ polKeys=map(fun,
             ["2015-09-23T09:46:55.059000",
              "2015-09-23T10:21:39.404000"])
 
-    
-if __name__ == "__main__":
-    #main1()
+def main2():
     for ocFile in todolist2:
         ocfname = "{}{}{}".format(siteDefs.data_base_dir,"open_circuit_voltage/",ocFile)
         uniformName = "{}{}{}".format(
@@ -264,3 +301,7 @@ if __name__ == "__main__":
             for row in ocData:
                 f.write("{}\n".format(','.join([i.__str__() for i in row])))
         print "Done with that."
+
+if __name__ == "__main__":
+    main1()
+    
