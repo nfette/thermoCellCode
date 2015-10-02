@@ -222,6 +222,7 @@ def main1():
             curveTraceToAdd['Vsource']=Vin
             curveTraceToAdd['Rsensor']=data.r_current_sensor
             curveTraceToAdd['Rbypass']=1e300
+            curveTraceToAdd['OCcount']=0
 
             ocData = np.concatenate([ocData,curveTraceToAdd])
 
@@ -243,13 +244,33 @@ def main1():
                                     ocData['ComputerTime'] < bpStop)
             ocData['Rbypass'][tcheck] = resistors[bpTag]
 
-        print "Writing the uniform file: {}".format(uniformName)
+        # Now we have all the data, sort it chronologically.
         ocData.sort()
+        
+        # Loop through and apply OCcount.
+        # Events that reset OCcount:
+        # + Curve trace (Rsensor < infinity)
+        # + Change Rbypass
+        count = 1
+        for i in range(1,len(ocData)):
+            bRsensorChanged = ocData[i]['Rsensor'] != ocData[i-1]['Rsensor']
+            bRbypassChanged = ocData[i]['Rbypass'] != ocData[i-1]['Rbypass']
+            if ocData[i]['OCcount']:
+                if bRsensorChanged or bRbypassChanged:
+                    count = 1
+                else:
+                    count += 1
+                ocData[i]['OCcount'] = count
+
+        # Write data out.
+        print "Writing the uniform file: {}".format(uniformName)
         with open(uniformName,'w') as f:
             f.write("{}\n".format(",".join(ocData.dtype.names)))
             for row in ocData:
                 f.write("{}\n".format(','.join([i.__str__() for i in row])))
         print "Done with that."
+
+        
 
 # Newer homogeneous databases
 # For these, we just need to
