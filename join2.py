@@ -10,8 +10,13 @@ Inputs:
 Post-processing:
     Calculations and plots of electrical data from select thermocell trials.
 
+==To do==
+* Use input files to control post-processing
+* Save abbreviated data files for selected windows
+
 ==Change log==
     2015-09-29, created by Nicholas Fette
+
 """
 
 # 2015-09-10
@@ -74,6 +79,7 @@ import matplotlib.pyplot as plt
 import join2types
 import matplotlib.dates as mdates
 import pytz
+import json
 
 # Where did we collect the data? Forgot to put timezone in curve trace files.
 tz = pytz.timezone('US/Arizona')
@@ -98,6 +104,13 @@ dtype3=[('ComputerTime','<M8[us]'),
         ('T_fintip','<f8')]
 usecols3=[0,4,5,6,7,8,9,10,11,12,13]
 
+dtype4=[('Voltage','<f8'),
+        ('Vstd','<f8'),
+        ('Rsensor','<f8'),
+        ('Rbypass','<f8'),
+        ('Vsource','<f8'),
+        ]
+
 todolist = [('CuSO$_4$, plain surface, trial 1',
              '2015-09-10T21=46=34.891000.dat','cr23x_outputs_2015-09-10T21=34=56.579000.dat',
                [('setpoint A','2015-09-11T02:10:00.000000','2015-09-11T03:20:00.000000'),
@@ -106,9 +119,9 @@ todolist = [('CuSO$_4$, plain surface, trial 1',
                 ('setpoint D','2015-09-12T13:00:00.000000','2015-09-12T13:32:00.000000')]),
             ('CuSO$_4$, plain surface, trial 2',
              '2015-09-13T18=38=23.924000.dat','cr23x_outputs_2015-09-13T19=49=03.865000.dat',
-               [('setpoint C','2015-09-14T13:00:00.000000','2015-09-14T14:26:00.000000'),
+               [('setpoint C1','2015-09-14T13:00:00.000000','2015-09-14T14:26:00.000000'),
                 ('setpoint A','2015-09-14T20:00:00.000000','2015-09-14T21:50:00.000000'),
-                ('setpoint C','2015-09-15T10:20:00.000000','2015-09-15T12:10:00.000000'),
+                ('setpoint C2','2015-09-15T10:20:00.000000','2015-09-15T12:10:00.000000'),
                 ('setpoint B','2015-09-15T16:00:00.000000','2015-09-15T19:40:00.000000')]),
             ('Cu+EDTA, grooved surface, trial 1',
              '2015-09-21T20=30=53.154000.dat','cr23x_outputs_2015-09-21T20=21=39.466000.dat',
@@ -120,8 +133,8 @@ todolist = [('CuSO$_4$, plain surface, trial 1',
              '2015-09-23T09=46=55.059000.dat','cr23x_outputs_2015-09-23T10=00=56.923000.dat',
                [('setpoint D','2015-09-23T14:00:00.000000','2015-09-23T15:00:00.000000'),
                 ('setpoint A','2015-09-23T17:40:00.000000','2015-09-23T18:40:00.000000'),
-                ('setpoint C','2015-09-23T20:30:00.000000','2015-09-23T21:30:00.000000'),
-                ('setpoint C','2015-09-24T00:30:00.000000','2015-09-24T01:30:00.000000')]),
+                ('setpoint C1','2015-09-23T20:30:00.000000','2015-09-23T21:30:00.000000'),
+                ('setpoint C2','2015-09-24T00:30:00.000000','2015-09-24T01:30:00.000000')]),
             ('CuSO$_4$, grooved surface, trial 2',
              '2015-09-24T11=13=51.022000.dat','cr23x_outputs_2015-09-24T10=40=18.244000.dat',
                [('setpoint D','2015-09-24T16:10:00.000000','2015-09-24T17:10:00.000000'),
@@ -189,6 +202,37 @@ def fetchCellData(fname):
             pickle.dump(join2types.uDataType(t,Vcell,I,P,OCcount),f)
     return t, Vcell, I, P, OCcount
 
+# Read the data
+def fetchCellData2(bigFilename,littleFilename,start,stop):
+    try:
+        uData = np.genfromtxt(littleFilename, delimiter=",", names=True,
+                     dtype=dtype2)
+    except:        
+        print "Reading the file. This may take a little while."
+        uniformName, _ = getCellDataNames(bigFilename)
+        uData = np.genfromtxt(uniformName, delimiter=",", names=True,
+                     dtype=dtype2)
+        # Filter by time
+        t=uData['ComputerTime']
+        keep = np.logical_and(start <= t, t < stop)
+        uData = uData[keep]
+        with open(littleFilename,'w') as f:
+            f.write("{}\n".format(','.join(uData.dtype.names)))
+            for row in uData:
+                f.write("{}\n".format(','.join([el.__str__() for el in row])))
+    return uData
+        
+def calculate(uData):
+    Vsrc = uData['Vsource']
+    Vread = uData['Voltage']
+    Rsensor = uData['Rsensor']
+    Rbypass = uData['Rbypass']
+    Vcell = -Vread
+    Vsens = Vsrc - Vread
+    I = Vsens / Rsensor + Vcell/Rbypass
+    P = Vcell * I
+    return Vcell, I, P
+
 def fetchThermalData(fname):
     thermalFileName = getThermalDataName(fname)
     # Read the data
@@ -249,66 +293,138 @@ def plotAllTogether(fig,ax1,ax2,Vcell,I,P,mask,label,n=4):
     ax1.plot(1e3*Vcell[mask],1e6*P[mask],'.',label=label)
     ax2.plot(1e3*Vcell[mask],1e3*I[mask],'.',label=label)
 
-def main1():
-    fig,ax1,ax2 = plotAllTogether(None,None,None,None,None,None,None,None)
-    for cellName,cellFilename,thermalFilename,intervals in todolist:
-        figTrial,ax1Trial,ax2Trial = plotAllTogether(None,None,None,None,None,None,None,None,3)
-        #figname = getFigname(cellFilename)
-        #if os.path.exists(figname):
-        #    continue
-        
-        print "Read cell data for trial: {}".format(cellFilename)
-        tCell, Vcell, I, P, OCcount = fetchCellData(cellFilename)
-        print "Read thermal data for trial: {}".format(thermalFilename)
-        thermalData = fetchThermalData(thermalFilename)
-        tThermal=thermalData['ComputerTime']
+# Filters and plots data from a specified trial
+def main1(config,configdir):
+    global gfig,gax1,gax2
+    cellName = config["Title"]
+    cellFilename = config["cellFilename"]
+    thermalFilename = config["thermalFilename"]
+    intervals = config["intervals"]
 
+    # Open plots for all trial data
+    figTrial,ax1Trial,ax2Trial = plotAllTogether(None,None,None,None,None,None,None,None,3)
+    figTrialS,ax1TrialS,ax2TrialS = plotAllTogether(None,None,None,None,None,None,None,None,3)
+    #figname = getFigname(cellFilename)
+    #if os.path.exists(figname):
+    #    continue
+    
+    print "Read thermal data for trial: {}".format(thermalFilename)
+    thermalData = fetchThermalData(thermalFilename)
+    tThermal=thermalData['ComputerTime']
+    print "Read cell data for trial: {}".format(cellFilename)
+    #tCell, Vcell, I, P, OCcount = fetchCellData(cellFilename)
+                                     
+    for setpoint in intervals:
+        setPointName = setpoint["setPointName"]
+        startst = setpoint["startst"]
+        stopst = setpoint["stopst"]
+        waitSecsAfterChange = setpoint["waitSecsAfterChange"]
+        label=cellName+', '+setPointName
+        figname = os.path.join(configdir,setPointName+".pdf")
+        start,stop = fun(startst), fun(stopst)
+        intervalFilename = os.path.join(configdir,setPointName+".dat")
+        print "Read cell data for setpoint: {}".format(setPointName)
+        
+        uData = fetchCellData2(cellFilename,intervalFilename,start,stop)
+        tCell = uData['ComputerTime']
+        OCcount = uData['OCcount']
+        Vcell, I, P,  = calculate(uData)
+        t2 = tCell.astype(datetime.datetime)
+        
+        indicesThermal = np.logical_and(start <= tThermal, tThermal < stop)
+        t3 = tThermal[indicesThermal].astype(datetime.datetime)
+        
         mask = np.logical_or(OCcount == 0, OCcount > 80)
         for maskStartSt,maskStopSt in masks:
             maskStart, maskStop = fun(maskStartSt), fun(maskStopSt)
             mask = np.logical_and(mask,
                                   np.logical_or(tCell <= maskStart,
                                                 tCell > maskStop))
-                                         
-        for setPointName,startst,stopst in intervals:
-            label=cellName+','+setPointName
-            figname = getFigname(startst.replace(":","="))
-            if os.path.exists(figname):
-               #continue
-                pass
-            start,stop = fun(startst), fun(stopst)
-            indicesCell = np.logical_and(start <= tCell, tCell < stop)
-            t2 = tCell[indicesCell].astype(datetime.datetime)
             
-            indicesThermal = np.logical_and(start <= tThermal, tThermal < stop)
-            t3 = tThermal[indicesThermal].astype(datetime.datetime)
-            plotStuff(t2,Vcell[indicesCell],I[indicesCell],P[indicesCell],
-                      mask[indicesCell],
-                      t3,thermalData[indicesThermal],
-                      label)
-            plt.savefig(figname)
-            #plt.show()
-            plt.close()
-            plotAllTogether(figTrial,ax1Trial,ax2Trial,Vcell[indicesCell],I[indicesCell],P[indicesCell],
-                      mask[indicesCell],label)
-            plotAllTogether(fig,ax1,ax2,Vcell[indicesCell],I[indicesCell],P[indicesCell],
-                      mask[indicesCell],label)
-            
-        ax2Trial.legend(loc='upper center',bbox_to_anchor=[0.5,-0.2],
-               fancybox=True, shadow=True)
-        figTrial.savefig(getFigname('everything_'+cellFilename))
+        plotStuff(t2,Vcell,I,P,mask,
+                  t3,thermalData[indicesThermal],
+                  label)
+        plt.savefig(figname)
+        #plt.show()
         plt.close()
-        
-    ax2.legend(loc='upper center',bbox_to_anchor=[0.5,-0.2],
-               fancybox=True, shadow=True)
-    ax1.set_ylim([0,300])
-    ax2.set_ylim([0,25])
-    plt.savefig(getFigname('everything'))
-    ax1.set_ylim([0,0.5])
-    ax2.set_ylim([0,0.045])
-    plt.savefig(getFigname('everything_small'))
+        plotAllTogether(figTrial,ax1Trial,ax2Trial,Vcell,I,P,mask,label)
+        plotAllTogether(gfig,gax1,gax2,Vcell,I,P,mask,label)
+
+        # Method #1 of data simplification:
+        # Sort data in order to calculate mean and std curves.
+        # There are three parameters that must match to lump data together.
+        # These can be expressed as a single tuple:
+        # (Rbypass, Rsensor, Vsource)
+        # For each lumped set, we will then ask for a mean and std of
+        # Voltage(measured).
+        # Note that current = function(Rbypass, Rsensor, Vsource, Voltage).
+        # Therefore we can plot current(Rbypass,Rsensor,Vsource,<Voltage>) vs <Voltage>.
+        # as well as
+        # current(Rbypass,Rsensor,Vsource,<Voltage>+sigma(Voltage)) vs
+        # <Voltage>+sigma(Voltage)
+        # Note that we have to sort also <Voltage> and <V> +/- sigma(Voltage).
+        # Do the same for power.
+        # Additional calculation can propagate uncertainty of Rbypass, Rsensor, Vsource, etc.
+        sortBox = dict()
+        for row in uData:
+            tup = (row['Rbypass'],row['Rsensor'],row['Vsource'])
+            if not tup in sortBox:
+                sortBox[tup]=[]
+            sortBox[tup].append(row['Voltage'])
+        bigN = len(sortBox)
+        sortstuff = np.zeros(bigN,dtype=dtype4)
+        for (i,tup) in zip(range(bigN),sortBox):
+            voltages=np.array(sortBox[tup])
+            sortstuff[i]['Rbypass'],sortstuff[i]['Rsensor'],sortstuff[i]['Vsource']=tup
+            sortstuff[i]['Voltage']=voltages.mean()
+            sortstuff[i]['Vstd']=voltages.std()
+        sortstuff.sort()
+        np.savetxt(os.path.join(configdir,setPointName+"_stats.txt"),sortstuff)
+        Vcell, I, P  = calculate(sortstuff)
+        plotAllTogether(figTrialS,ax1TrialS,ax2TrialS,Vcell,I,P,Vcell>=0,label)
+
+        # Method #2.
+        # Curve fit the entire data set.
+        # Assume current = function(Rbypass, Rsensor, Vsource, Voltage).
+        # Choose a model for fitting, current = function(Voltage,params).
+        # As above, then for an arbitrary set V, plot current(V,<params>) vs V.
+        # For uncertainty, you must have a stationary correlation matrix R for params.
+        # Then do some magic to compute upper and lower percentiles for {current(V,p)},
+        # where p is a random variable distributed with mean <params> and correlation R.
+
+    # After loop, save plots and tidy up.
+    ax2Trial.legend(loc='upper center',bbox_to_anchor=[0.5,-0.2],
+           fancybox=True, shadow=True)
+    figTrial.savefig(os.path.join(configdir,"everything"+".pdf"))
+    ax1TrialS.set_xlim(config["vlim"])
+    ax1TrialS.set_ylim(config["plim"])
+    ax2TrialS.set_xlim(config["vlim"])
+    ax2TrialS.set_ylim(config["ilim"])
+    ax2TrialS.legend(loc='upper center',bbox_to_anchor=[0.5,-0.2],
+           fancybox=True, shadow=True)
+    figTrialS.savefig(os.path.join(configdir,"statistics"+".pdf"))
     plt.close()
+    return sortBox,sortstuff
         
 if __name__ == "__main__":
-    main1()
+    try:
+        configFilename=sys.argv[1]
+    except:
+        configFilename=siteDefs.data_base_dir+"uniform_data/2015-09-10T21=46=34.891000/config.json"
+    with open(configFilename,'r') as f:
+        config = json.load(f)
+    configdir = os.path.split(configFilename)[0]
+        
+    gfig,gax1,gax2 = plotAllTogether(None,None,None,None,None,None,None,None)
+
+    main1(config,configdir)
     
+##    gax2.legend(loc='upper center',bbox_to_anchor=[0.5,-0.2],
+##               fancybox=True, shadow=True)
+##    gax1.set_ylim([0,300])
+##    gax2.set_ylim([0,25])
+##    plt.savefig(getFigname('everything'))
+##    gax1.set_ylim([0,0.5])
+##    gax2.set_ylim([0,0.045])
+##    plt.savefig(getFigname('everything_small'))
+##    plt.close()
