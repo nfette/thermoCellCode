@@ -32,8 +32,8 @@ Post-processing:
 # 2015-09-11T20:06:44.344000: bypass insert 1/2 ohm nominal
 # 2015-09-11T20:11:09.540000: bypass insert 1/3 ohm nominal
 # 2015-09-11T20:12:58.712000: bypass removed
-# 2015-09-11T21:20:33.491000: bypass insert 1 ohm nominal
-# 2015-09-11T21:22:28.863000: bypass insert 1/2 ohm nominal
+# 2015-09-11T21:20:33.491000: bypass insert 1/2 ohm nominal
+# 2015-09-11T21:22:28.863000: bypass insert 1/3 ohm nominal
 # 2015-09-11T21:26:20.774000: bypass removed
 
 # 2015-09-13

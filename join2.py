@@ -31,8 +31,8 @@ Post-processing:
 # 2015-09-11T20:06:44.344000: bypass insert 1/2 ohm nominal
 # 2015-09-11T20:11:10.040000: bypass insert 1/3 ohm nominal
 # 2015-09-11T20:12:58.712000: bypass removed
-# 2015-09-11T21:20:33.491000: bypass insert 1 ohm nominal
-# 2015-09-11T21:22:28.863000: bypass insert 1/2 ohm nominal
+# 2015-09-11T21:20:33.491000: bypass insert 1/2 ohm nominal
+# 2015-09-11T21:22:28.863000: bypass insert 1/3 ohm nominal
 # 2015-09-11T21:26:20.774000: bypass removed
 
 # 2015-09-13
@@ -80,6 +80,7 @@ import join2types
 import matplotlib.dates as mdates
 import pytz
 import json
+import sys
 
 # Where did we collect the data? Forgot to put timezone in curve trace files.
 tz = pytz.timezone('US/Arizona')
@@ -109,6 +110,7 @@ dtype4=[('Voltage','<f8'),
         ('Rsensor','<f8'),
         ('Rbypass','<f8'),
         ('Vsource','<f8'),
+        ('Npoints','<i4'),
         ]
 
 todolist = [('CuSO$_4$, plain surface, trial 1',
@@ -148,6 +150,7 @@ masks = [('2015-09-11T19:49:10.193000','2015-09-11T19:50:30.045000'),
          ('2015-09-11T20:11:10.040000','2015-09-11T20:11:30.000000'),
          ('2015-09-11T20:12:58.712000','2015-09-11T20:14:28.044000'),
          ('2015-09-11T21:20:33.491000','2015-09-11T21:21:30.082000'),
+         ('2015-09-11T21:21:30.082000','2015-09-11T21:22:28.863000'),
          ('2015-09-11T21:22:28.863000','2015-09-11T21:23:00.014000'),
          \
          ('2015-09-14T13:40:00.000000','2015-09-14T13:43:00.000000'),
@@ -205,10 +208,12 @@ def fetchCellData(fname):
 # Read the data
 def fetchCellData2(bigFilename,littleFilename,start,stop):
     try:
+        print "Trying the abridged file..."
         uData = np.genfromtxt(littleFilename, delimiter=",", names=True,
                      dtype=dtype2)
+        print "Read the abridged file."
     except:        
-        print "Reading the file. This may take a little while."
+        print "Reading the full source file. This may take a little while."
         uniformName, _ = getCellDataNames(bigFilename)
         uData = np.genfromtxt(uniformName, delimiter=",", names=True,
                      dtype=dtype2)
@@ -216,10 +221,7 @@ def fetchCellData2(bigFilename,littleFilename,start,stop):
         t=uData['ComputerTime']
         keep = np.logical_and(start <= t, t < stop)
         uData = uData[keep]
-        with open(littleFilename,'w') as f:
-            f.write("{}\n".format(','.join(uData.dtype.names)))
-            for row in uData:
-                f.write("{}\n".format(','.join([el.__str__() for el in row])))
+        writeArray(littleFilename,uData)
     return uData
         
 def calculate(uData):
@@ -240,14 +242,18 @@ def fetchThermalData(fname):
                                 dtype=dtype3, usecols=usecols3)
     return thermalData
 
-def plotStuff(t,Vcell,I,P,mask,t3,thermalData,label):
+def plotStuff(t,Vcell,I,P,mask,thermalData,indicesThermal,label):
     fig, (row1, row2) = plt.subplots(2,2,sharex='col',figsize=(16,8))
     ax0,ax1 = row1
     ax2,ax3 = row2
     fig.suptitle(label)
-    
+
+    t3 = thermalData['ComputerTime'].astype(datetime.datetime)
     for aName,aType in dtype3[1:]:
-        ax0.plot(t3,thermalData[aName],label=aName)
+        ax0.plot(t3[indicesThermal],
+                 thermalData[aName][indicesThermal],'.',label=aName)
+        ax0.plot(t3[-indicesThermal],
+                 thermalData[aName][-indicesThermal],'.',ms=1)
     #ax0.legend()
     ax0.set_ylim([0,120])
     ax0.set_ylabel('Temperature [$^\circ$C]')
@@ -258,11 +264,13 @@ def plotStuff(t,Vcell,I,P,mask,t3,thermalData,label):
     ax1.set_xlabel('Voltage / mV')
     ax1.grid(True,which='both',axis='both')
 
-    ax2.plot(t,1e3*Vcell,'r.',label="Voltage / mV")
+    ax2.plot(t[mask],1e3*Vcell[mask],'r.',label="Voltage / mV")
+    ax2.plot(t[-mask],1e3*Vcell[-mask],'r.',ms=1)
     #ax2.set_ylim([-20,200])
     ax2b = ax2.twinx()
     #ax2c = ax2.twinx()
-    ax2b.plot(t,1e3*I,'g.',label="Current / mA")
+    ax2b.plot(t[mask],1e3*I[mask],'g.',label="Current / mA")
+    ax2b.plot(t[-mask],1e3*I[-mask],'g.',ms=1)
     #ax2c.plot(t,P,'b.',label="Power")
     ax2.grid(True,which='both',axis='both')
     ml10=mdates.MinuteLocator(byminute=range(0,60,5),tz=tz)
@@ -293,6 +301,21 @@ def plotAllTogether(fig,ax1,ax2,Vcell,I,P,mask,label,n=4):
     ax1.plot(1e3*Vcell[mask],1e6*P[mask],'.',label=label)
     ax2.plot(1e3*Vcell[mask],1e3*I[mask],'.',label=label)
 
+def writeArray(fname,array):
+    with open(fname,'w') as f:
+        f.write("{}\n".format(','.join(array.dtype.names)))
+        for row in array:
+            f.write("{}\n".format(','.join([el.__str__() for el in row])))
+
+def meanTemperature(t,n=3):
+    within = np.ones_like(t,dtype='bool')
+    for i in range(n):
+        tguess = t.mean()
+        tstd = t.std()
+        within = (tguess - 2*tstd < t) * (t < tguess + 2*tstd)
+        t=t[within]
+    return tguess
+
 # Filters and plots data from a specified trial
 def main1(config,configdir):
     global gfig,gax1,gax2
@@ -310,6 +333,12 @@ def main1(config,configdir):
     
     print "Read thermal data for trial: {}".format(thermalFilename)
     thermalData = fetchThermalData(thermalFilename)
+    for i in thermalData.dtype.names:
+        try:
+            #thermalData[i][thermalData[i] < 0] = np.nan
+            print "<{}> = {}".format(i, thermalData[i].mean())
+        except:
+            pass
     tThermal=thermalData['ComputerTime']
     print "Read cell data for trial: {}".format(cellFilename)
     #tCell, Vcell, I, P, OCcount = fetchCellData(cellFilename)
@@ -330,19 +359,48 @@ def main1(config,configdir):
         OCcount = uData['OCcount']
         Vcell, I, P,  = calculate(uData)
         t2 = tCell.astype(datetime.datetime)
-        
+
+        # Create masks for thermal data where curve trace is active.
+        i = 0
+        thermalMasks = []
+        for i in range(len(uData)):
+            if 'thermalMaskStart' not in locals():
+                if uData[i]['OCcount'] > 0:
+                    thermalMaskStart = uData[i]['ComputerTime']
+            else:
+                if uData[i]['OCcount'] == 0:
+                    thermalMaskStop = uData[i-1]['ComputerTime']
+                    thermalMasks.append((thermalMaskStart,thermalMaskStop))
+                    del thermalMaskStart
         indicesThermal = np.logical_and(start <= tThermal, tThermal < stop)
-        t3 = tThermal[indicesThermal].astype(datetime.datetime)
-        
-        mask = np.logical_or(OCcount == 0, OCcount > 80)
-        for maskStartSt,maskStopSt in masks:
-            maskStart, maskStop = fun(maskStartSt), fun(maskStopSt)
-            mask = np.logical_and(mask,
-                                  np.logical_or(tCell <= maskStart,
-                                                tCell > maskStop))
+        indicesThermalGood = np.zeros_like(tThermal,dtype='bool')
+        for thermalMaskStart,thermalMaskStop in thermalMasks:
+            indicesThermalGood += ((tThermal >= thermalMaskStart ) + (thermalMaskStop <= tThermal))
             
+        # What now?
+        writeArray(os.path.join(configdir,setPointName+"_thermal.txt"),
+                   thermalData[indicesThermal])
+        thermalMeans = np.zeros(1,dtype=dtype3)
+        for i in thermalData.dtype.names:
+            try:
+                #thermalMeans[i] = thermalData[i][indicesThermal*indicesThermalGood].mean()
+                thermalMeans[i] = meanTemperature(thermalData[i][indicesThermal*indicesThermalGood])
+                print "<{}> = {}".format(i, thermalMeans[i])
+                
+            except:
+                pass
+        writeArray(os.path.join(configdir,setPointName+"_thermalmeans.txt"),thermalMeans)
+
+        # Wearing a mask.
+        mask = uData["Vsource"] >= 0
+        mask *= (OCcount == 0) + (OCcount > setpoint["waitSecsAfterChange"])
+        for maskStartSt,maskStopSt in config["masks"]:
+            maskStart, maskStop = fun(maskStartSt), fun(maskStopSt)
+            mask *= (tCell <= maskStart) + (tCell > maskStop)
+        
+        print "Plotting all the data."
         plotStuff(t2,Vcell,I,P,mask,
-                  t3,thermalData[indicesThermal],
+                  thermalData[indicesThermal],indicesThermalGood[indicesThermal],
                   label)
         plt.savefig(figname)
         #plt.show()
@@ -365,8 +423,9 @@ def main1(config,configdir):
         # Note that we have to sort also <Voltage> and <V> +/- sigma(Voltage).
         # Do the same for power.
         # Additional calculation can propagate uncertainty of Rbypass, Rsensor, Vsource, etc.
+        print "Applying method 1 to calculate a 'mean' set of points."
         sortBox = dict()
-        for row in uData:
+        for row in uData[mask]:
             tup = (row['Rbypass'],row['Rsensor'],row['Vsource'])
             if not tup in sortBox:
                 sortBox[tup]=[]
@@ -378,10 +437,12 @@ def main1(config,configdir):
             sortstuff[i]['Rbypass'],sortstuff[i]['Rsensor'],sortstuff[i]['Vsource']=tup
             sortstuff[i]['Voltage']=voltages.mean()
             sortstuff[i]['Vstd']=voltages.std()
+            sortstuff[i]['Npoints']=voltages.size
         sortstuff.sort()
-        np.savetxt(os.path.join(configdir,setPointName+"_stats.txt"),sortstuff)
+        writeArray(os.path.join(configdir,setPointName+"_stats.txt"),sortstuff)
         Vcell, I, P  = calculate(sortstuff)
-        plotAllTogether(figTrialS,ax1TrialS,ax2TrialS,Vcell,I,P,Vcell>=0,label)
+        print "Plotting the 'mean' set of  points."
+        plotAllTogether(figTrialS,ax1TrialS,ax2TrialS,Vcell,I,P,I>=0,label)
 
         # Method #2.
         # Curve fit the entire data set.
@@ -391,11 +452,13 @@ def main1(config,configdir):
         # For uncertainty, you must have a stationary correlation matrix R for params.
         # Then do some magic to compute upper and lower percentiles for {current(V,p)},
         # where p is a random variable distributed with mean <params> and correlation R.
+        
 
     # After loop, save plots and tidy up.
     ax2Trial.legend(loc='upper center',bbox_to_anchor=[0.5,-0.2],
            fancybox=True, shadow=True)
     figTrial.savefig(os.path.join(configdir,"everything"+".pdf"))
+    
     ax1TrialS.set_xlim(config["vlim"])
     ax1TrialS.set_ylim(config["plim"])
     ax2TrialS.set_xlim(config["vlim"])
@@ -410,14 +473,14 @@ if __name__ == "__main__":
     try:
         configFilename=sys.argv[1]
     except:
-        configFilename=siteDefs.data_base_dir+"uniform_data/2015-09-10T21=46=34.891000/config.json"
+        configFilename=siteDefs.data_base_dir+"uniform_data/2015-09-24T11=13=51.022000/config.json"
     with open(configFilename,'r') as f:
         config = json.load(f)
     configdir = os.path.split(configFilename)[0]
         
     gfig,gax1,gax2 = plotAllTogether(None,None,None,None,None,None,None,None)
 
-    main1(config,configdir)
+    sortBox,sortstuff=main1(config,configdir)
     
 ##    gax2.legend(loc='upper center',bbox_to_anchor=[0.5,-0.2],
 ##               fancybox=True, shadow=True)
