@@ -7,13 +7,19 @@ thermoCellCode/window_ac/arduino_IR:
    Requires the IRremote library by Ken Shirriff. http://arcfn.com
    (This must replace the RobotIRremote library included by default.)
    Created by Nicholas Fette, 2016-02-02.
+
+Recent changes:
+2016-02-05 nfette Added two relay control signals.
 */
 
 #include <IRremote.h>
 #include "my_ac_remote_codes.h"
 
-int RECV_PIN = 11;
+int RECV_PIN = 10;
 int SEND_PIN = 3;
+// Do not use pin 13 for relays since it 'beeps' on boot.
+int RELAYA_PIN = 11;
+int RELAYB_PIN = 12;
 
 IRrecv irrecv(RECV_PIN);
 IRsend irsend;
@@ -24,6 +30,8 @@ void setup()
 {
   Serial.begin(9600);
   //irrecv.enableIRIn(); // Start the receiver
+  pinMode(RELAYA_PIN, OUTPUT);
+  pinMode(RELAYB_PIN, OUTPUT);
 }
 
 void loop() {
@@ -46,15 +54,31 @@ void loop() {
         break;
       case 'f':
         irsend.sendNEC(ACCODE_FAN, codeLen);
-        Serial.println("Sent toggle fan");
+        Serial.println("Sent AC toggle fan.");
         break;
       case 'm':
         irsend.sendNEC(ACCODE_MODE, codeLen);
-        Serial.println("Sent mode");
+        Serial.println("Sent A/C mode.");
         break;
       case 't':
         irsend.sendNEC(ACCODE_TIMER, codeLen);
-        Serial.println("Sent timer");
+        Serial.println("Sent timer.");
+        break;
+      case 'a':
+        digitalWrite(RELAYA_PIN, HIGH);
+        Serial.println("Sent 'on' to relay A.");
+        break;
+      case 'b':
+        digitalWrite(RELAYB_PIN, HIGH);
+        Serial.println("Sent 'on' to relay B.");
+        break;
+      case 'A':
+        digitalWrite(RELAYA_PIN, LOW);
+        Serial.println("Sent 'off' to relay A.");
+        break;
+      case 'B':
+        digitalWrite(RELAYB_PIN, LOW);
+        Serial.println("Sent 'off' to relay B.");
         break;
       default:
         Serial.print("Unrecognized ascii code: ");
@@ -93,6 +117,7 @@ void practiceLoop() {
   irsend.sendNEC(ACCODE_POWER, codeLen);
   delay(10*1000);
 }
+
 
 void receiveLoop() {
   if (irrecv.decode(&results)) {
