@@ -1,1 +1,146 @@
-[["2016-02-24T22:40:04.780000", {"timer": 0, "fan": 1, "temp": 60, "power": false, "mode": "Fan"}]]
+[
+    {
+        "time": "2016-02-25T16:45:00",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:45:10",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": true,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:45:20",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:45:30",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": false,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-25T16:45:40",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": false,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-25T16:55:40",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": true,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-25T20:55:40",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 60,
+            "timer": 0,
+            "mode": "Cool"
+        },
+        "relayA": true,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-26T00:55:40",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": true,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-26T04:55:40",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 84,
+            "timer": 0,
+            "mode": "Heat"
+        },
+        "relayA": true,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-26T08:55:40",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": true,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-26T12:55:40",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": false,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-26T13:05:40",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 86,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": false,
+        "relayB": false
+    }
+]

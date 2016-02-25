@@ -43,12 +43,12 @@ def toggleFan(state):
     else:
         return state
 def toggleTempUp(state):
-    if state.power:
+    if state.power and state.mode != 'Fan':
         return state._replace(temp=min(state.temp + 1, 86))
     else:
         return state
 def toggleTempDown(state):
-    if state.power:
+    if state.power and state.mode != 'Fan':
         return state._replace(temp=max(state.temp - 1, 60))
     else:
         return state
@@ -81,21 +81,24 @@ def adjust(setpoint,ac):
         if not ac.power:
             ac = togglePower(ac)
             s += 'p'
-        while ac.mode != setpoint.mode:
-            ac = toggleMode(ac)
-            s += 'm'
         while ac.fan != setpoint.fan:
             ac = toggleFan(ac)
             s += 'f'
         while ac.timer != setpoint.timer:
             ac = toggleTimer(ac)
             s += 't'
+        if ac.temp != setpoint.temp and ac.mode == 'Fan':
+            ac = toggleMode(ac)
+            s += 'm'
         while ac.temp < setpoint.temp:
             ac = toggleTempUp(ac)
             s += 'u'
         while ac.temp > setpoint.temp:
             ac = toggleTempDown(ac)
             s += 'd'
+        while ac.mode != setpoint.mode:
+            ac = toggleMode(ac)
+            s += 'm'
         
         if ac.power != setpoint.power:
             togglePower(ac)

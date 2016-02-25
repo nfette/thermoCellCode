@@ -25,6 +25,7 @@ IRrecv irrecv(RECV_PIN);
 IRsend irsend;
 
 decode_results results;
+bool verbose;
 
 void setup()
 {
@@ -32,6 +33,7 @@ void setup()
   //irrecv.enableIRIn(); // Start the receiver
   pinMode(RELAYA_PIN, OUTPUT);
   pinMode(RELAYB_PIN, OUTPUT);
+  verbose = false;
 }
 
 void loop() {
@@ -42,31 +44,44 @@ void loop() {
     switch (msg) {
       case 'p':
         irsend.sendNEC(ACCODE_POWER, codeLen);
-        Serial.println("Sent power");
+        if (verbose)
+          Serial.println("Sent power");
+        delay(1000);
         break;
       case 'u':
         irsend.sendNEC(ACCODE_TEMPUP, codeLen);
-        Serial.println("Sent tempup");
+        if (verbose)
+          Serial.println("Sent tempup");
+        standardPause();
         break;
       case 'd':
         irsend.sendNEC(ACCODE_TEMPDOWN, codeLen);
-        Serial.println("Sent temp down");
+        if (verbose)
+          Serial.println("Sent temp down");
+        standardPause();
         break;
       case 'f':
         irsend.sendNEC(ACCODE_FAN, codeLen);
-        Serial.println("Sent AC toggle fan.");
+        if (verbose)
+          Serial.println("Sent AC toggle fan.");
+        standardPause();
         break;
       case 'm':
         irsend.sendNEC(ACCODE_MODE, codeLen);
-        Serial.println("Sent A/C mode.");
+        if (verbose)
+          Serial.println("Sent A/C mode.");
+        standardPause();
         break;
       case 't':
         irsend.sendNEC(ACCODE_TIMER, codeLen);
-        Serial.println("Sent timer.");
+        if (verbose)
+          Serial.println("Sent timer.");
+        standardPause();
         break;
       case 'a':
         digitalWrite(RELAYA_PIN, HIGH);
-        Serial.println("Sent 'on' to relay A.");
+        if (verbose)
+          Serial.println("Sent 'on' to relay A.");
         break;
       case 'b':
         digitalWrite(RELAYB_PIN, HIGH);
@@ -74,18 +89,44 @@ void loop() {
         break;
       case 'A':
         digitalWrite(RELAYA_PIN, LOW);
-        Serial.println("Sent 'off' to relay A.");
+        if (verbose)
+          Serial.println("Sent 'off' to relay A.");
         break;
       case 'B':
         digitalWrite(RELAYB_PIN, LOW);
-        Serial.println("Sent 'off' to relay B.");
+        if (verbose)
+          Serial.println("Sent 'off' to relay B.");
+        break;
+      case 'v':
+        verbose = false;
+        Serial.println("Set verbose = false.");
+        break;
+      case 'V':
+        verbose = true;
+        Serial.println("Set verbose = true.");
+        break;
+      case '?':
+        Serial.print("Relay A is ");
+        if (digitalRead(RELAYA_PIN))
+          Serial.print("on");
+        else
+          Serial.print("off");
+        Serial.print(" and Relay B is ");
+        if (digitalRead(RELAYA_PIN))
+          Serial.println("on.");
+        else
+          Serial.println("off.");
         break;
       default:
         Serial.print("Unrecognized ascii code: ");
         Serial.print(msg);
-        Serial.println(". Try one of [pudfmt].");
+        Serial.println(". Try one of [pmftudaAbBvV?].");
     }
   }
+}
+
+void standardPause() {
+  delay(100);
 }
 
 void practiceLoop() {

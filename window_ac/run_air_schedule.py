@@ -3,19 +3,6 @@ from threading import Timer
 import itertools
 from windowAcState import *
 
-def print_time():
-    print "From print_time", time.time()
-
-def print_some_times2():
-    print time.time()
-    t1=Timer(5, print_time, ())
-    t1.start()
-    t2=Timer(10, print_time, ())
-    t2.start()
-    #time.sleep(11)  # sleep while time-delay events execute
-    print time.time()
-    return t1, t2
-
 def loadProgram(setfile):
     with open(setfile,'r') as f:
         prog = json.load(f)
@@ -70,7 +57,9 @@ if __name__ == "__main__":
                     print "Remote:",ser.readline()
 
             if dprog:
-                print "time to next: ", dprog.keys()[0] - now,
-                time.sleep(1)
+                keys=dprog.keys()
+                keys.sort()
+                print "time to next: ", keys[0] - now,
+                time.sleep(0.1)
             else:
                 print "Program complete."

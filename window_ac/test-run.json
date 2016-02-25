@@ -1,0 +1,122 @@
+[
+    {
+        "time": "2016-02-25T16:35:46",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Fan"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:35:51",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Fan"
+        },
+        "relayA": true,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:35:56",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Fan"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:36:01",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Fan"
+        },
+        "relayA": false,
+        "relayB": true
+    },
+    {
+        "time": "2016-02-25T16:36:06",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Fan"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:36:11",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 60,
+            "timer": 0,
+            "mode": "Cool"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:36:16",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Energy Saver"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:36:21",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 84,
+            "timer": 0,
+            "mode": "Heat"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:36:26",
+        "WacState": {
+            "power": true,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Fan"
+        },
+        "relayA": false,
+        "relayB": false
+    },
+    {
+        "time": "2016-02-25T16:36:31",
+        "WacState": {
+            "power": false,
+            "fan": 1,
+            "temp": 72,
+            "timer": 0,
+            "mode": "Fan"
+        },
+        "relayA": false,
+        "relayB": false
+    }
+]
