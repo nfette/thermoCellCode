@@ -1,0 +1,12 @@
+[{"delaySecs": 0, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": false, "mode": "Fan"}, "relayA": false, "relayB": false},
+{"delaySecs": 10, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": false, "mode": "Fan"}, "relayA": true, "relayB": false},
+{"delaySecs": 10, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": false, "mode": "Fan"}, "relayA": false, "relayB": false},
+{"delaySecs": 10, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": false, "mode": "Fan"}, "relayA": false, "relayB": true},
+{"delaySecs": 600, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": false, "mode": "Fan"}, "relayA": true, "relayB": true},
+{"delaySecs": 14400, "WacState":{"timer": 0, "fan": 1, "temp": 60, "power": true, "mode": "Cool"}, "relayA": true, "relayB": true},
+{"delaySecs": 14400, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": true, "mode": "Energy Saver"}, "relayA": true, "relayB": true},
+{"delaySecs": 14400, "WacState":{"timer": 0, "fan": 1, "temp": 84, "power": true, "mode": "Heat"}, "relayA": true, "relayB": true},
+{"delaySecs": 14400, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": false, "mode": "Fan"}, "relayA": true, "relayB": true}
+{"delaySecs": 14400, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": false, "mode": "Fan"}, "relayA": false, "relayB": true}
+{"delaySecs": 600, "WacState":{"timer": 0, "fan": 1, "temp": 72, "power": false, "mode": "Fan"}, "relayA": false, "relayB": false}
+]

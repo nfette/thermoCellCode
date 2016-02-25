@@ -1,177 +1,149 @@
 import serial
 import json
 import time
+import datetime
+from collections import namedtuple
+import sys
 
 defaultFile = 'ac_state.json'
+whenfmtdata = "%Y-%m-%dT%H:%M:%S"
 
 modes = 'Energy Saver,Cool,Fan,Heat'.split(',')
-modesMap = dict(list(enumerate(modes)))
-modesMapBack = dict([v,k] for k,v in modesMap.items())
-class windowACdata:
-    def __init__(self):
-        self.power = False
-        self.mode = 2
-        self.fan = 1 # 1 or 2
-        self.temp = 60
-        self.timer = 0
-    def __eq__(self, other):
-        return (self.power == other.power) \
-               and (self.mode == other.mode) \
-               and (self.fan == other.fan) \
-               and (self.temp == other.temp) \
-               and (self.timer == other.timer)
-    def toDict(self):
-        return dict(power=self.power,
-                   mode=modesMap[self.mode],
-                   fan=self.fan,
-                   temp=self.temp,
-                   timer=self.timer)        
-    def fromDict(self, d):
-        self.power = d['power']
-        self.mode=modesMapBack[d['mode']]
-        self.fan=d['fan']
-        self.temp=d['temp']
-        self.timer=d['timer']
-        
-class windowAC(object):
-    def __init__(self,data):
-        self.data = data
-    def togglePower(self):
-        self.doChar('p')
-    def toggleMode(self):
-        self.doChar('m')
-    def toggleFan(self):
-        self.doChar('f')
-    def toggleTempUp(self):
-        self.doChar('u')
-    def toggleTempDown(self):
-        self.doChar('d')
-    def toggleTimer(self):
-        self.doChar('t')
-    def doChar(self,c):
-        if c == 'p':
-            self.data.power = not self.data.power
-            return True
-        elif c == 'm':
-            if self.data.power:
-                self.data.mode = (self.data.mode + 1) % 4
-            return True
-        elif c == 'f':
-            if self.data.power:
-                self.data.fan = self.data.fan % 2 + 1
-            return True
-        elif c == 'u':
-            if self.data.power:
-                self.data.temp = min(self.data.temp + 1, 86)
-            return True
-        elif c == 'd':
-            if self.data.power:
-                self.data.temp = max(self.data.temp - 1, 60)
-            return True
-        elif c == 't':
-            if self.data.power:
-                self.data.timer = (self.data.timer + 1) % 25
-            return True
-        else:
-            return False
-        """
-        fun = {'p': self.togglePower,
-               'u': self.toggleTempUp,
-               'd': self.toggleTempDown,
-               'f': self.toggleFan,
-               'm': self.toggleMode,
-               't': self.toggleTimer}
-        if c in fun:
-            fun[c]()
-            return True
-        else:
-            return False
-        """
+def nextMode(ms):
+    mi = modes.index(ms)
+    mi = (mi + 1) % 4
+    return modes[mi]
+    
+WacState=namedtuple("WacState","power,mode,fan,temp,timer")
+def isValid(self):
+    return (type(self.power) == bool \
+            and self.mode in modes \
+            and self.fan in (1,2) \
+            and self.temp in range(60,86+1) \
+            and self.timer in range(0,24+1))
+WacState.isValid = isValid
 
-    __doChar = doChar
-        
-    def __repr__(self):
-        return """"power" : {data.power}
-"mode" : {mode}
-"fan" : {data.fan}
-"temp" : {data.temp}
-"timer" : {data.timer}""".format(data=self.data,mode=modesMap[self.data.mode])
+def loadState():
+    with open(defaultFile,'r') as f:
+        return WacState(**json.load(f))
+def saveState(state):
+    with open(defaultFile,'w') as f:
+        json.dump(state._asdict(), f, indent=4, separators=(',', ': '))
 
-class linkedAC(windowAC):
-    def __init__(self,data,ser):
-        super(linkedAC,self).__init__(data)
-        self.ser = ser
-        self.link = True
-    def doChar(self,c):
-        if c == 'l':
-            self.link = not self.link
-        elif super(linkedAC,self).doChar(c):
-            if self.link:
-                self.ser.write(c)
-                time.sleep(1)
-        else:
-            print "Input ignored"
+def togglePower(state):
+    return state._replace(power=not state.power)
+def toggleMode(state):
+    if state.power:
+        return state._replace(mode=nextMode(state.mode))
+    else:
+        return state
+def toggleFan(state):
+    if state.power:
+        return state._replace(fan=state.fan % 2 + 1)
+    else:
+        return state
+def toggleTempUp(state):
+    if state.power:
+        return state._replace(temp=min(state.temp + 1, 86))
+    else:
+        return state
+def toggleTempDown(state):
+    if state.power:
+        return state._replace(temp=max(state.temp - 1, 60))
+    else:
+        return state
+def toggleTimer(state):
+    if state.power:
+        return state._replace(timer=(state.timer + 1) % 25)
+    else:
+        return state
+    
+keyMap = {'p': togglePower,
+           'u': toggleTempUp,
+           'd': toggleTempDown,
+           'f': toggleFan,
+           'm': toggleMode,
+           't': toggleTimer}
+
+def mapKeys(state,keys):
+    for key in keys:
+        if key in keyMap: # otherwise ignore the key
+            state = keyMap[key](state)
+    return state
+
+# Attempt to match the state of setpoint.
+# Outputs the sequence required to do it, or false if unreachable.
+def adjust(setpoint,ac):
+    if not (setpoint.isValid() and ac.isValid()):
+        return False
+    s = ''
+    if ac != setpoint:
+        if not ac.power:
+            ac = togglePower(ac)
+            s += 'p'
+        while ac.mode != setpoint.mode:
+            ac = toggleMode(ac)
+            s += 'm'
+        while ac.fan != setpoint.fan:
+            ac = toggleFan(ac)
+            s += 'f'
+        while ac.timer != setpoint.timer:
+            ac = toggleTimer(ac)
+            s += 't'
+        while ac.temp < setpoint.temp:
+            ac = toggleTempUp(ac)
+            s += 'u'
+        while ac.temp > setpoint.temp:
+            ac = toggleTempDown(ac)
+            s += 'd'
         
-        if self.ser:
-            while (self.ser.inWaiting()):
-                print "Remote:",self.ser.readline()
-    def __repr__(self):
-        return "Link connected : {}".format(self.link)
+        if ac.power != setpoint.power:
+            togglePower(ac)
+            s += 'p'
+    return s
 
 def openSerial():
     return serial.Serial('COM4',timeout=1)
-    
-def interact(ac,ser=None):
-    print ser
-    lac = linkedAC(ac.data, ser)
-    print lac
-    print ac
-    while True:
-        for c in raw_input("[pudftml]:"):
-            print c
-            lac.doChar(c)
-            print lac
-            print ac
-            saveState(ac)
 
-def loadState(ac):
-    with open(defaultFile,'r') as f:
-        ac.data.fromDict(json.load(f))
-def saveState(ac):
-    with open(defaultFile,'w') as f:
-        json.dump(ac.data.toDict(),f)
+# Tee and feed the control string cs into both
+#   ac - state
+#   ser - serial object
+# Returns the updated state
+def echo(cs,ac,ser):
+    ser.write(cs)
+    return mapKeys(ac,cs)
 
-# Modify lac to match the state of setpoint.
-def adjust(setpoint,ac):
-    if ac.data != setpoint:
-        if not ac.data.power:
-            ac.togglePower()
+class fakeSerial:
+    def write(self,c):
+        pass
+    def inWaiting(self):
+        return 0
+    def __enter__(self):
+        return self
+    def __exit__(self, type, value, traceback):
+        pass
 
-        while ac.data.mode != setpoint.mode:
-            ac.toggleMode()
-        while ac.data.fan != setpoint.fan:
-            ac.toggleFan()
-        while ac.data.timer != setpoint.timer:
-            ac.toggleTimer()
-        while ac.data.temp < setpoint.temp:
-            ac.toggleTempUp()
-        while ac.data.temp > setpoint.temp:
-            ac.toggleTempDown()
-        
-        if ac.data.power != setpoint.power:
-            ac.togglePower()
-
-def runProgram(setfile,ac):
-    with open(setfile,'r') as f:
-        prog = json.load(f)
-    for ts, sp in prog:
-        timestamp = ts
-        setpoint = windowACdata()
-        setpoint.fromDict(sp)
-        print timestamp, setpoint
+def openFake():
+    return fakeSerial()
 
 if __name__ == "__main__":
-    ac = windowAC(windowACdata())
-    loadState(ac)
-
-    interact(ac)
+    if "-help" in sys.argv:
+        print "Usage: windowAcState.py [-live] [-quiet]"
+    ac = loadState()
+    serGen = openSerial if "-live" in sys.argv else openFake
+    prompt = "" if "-quiet" in sys.argv else "[pmftudaAbBq]> "
+    with serGen() as ser:
+        while (ser.inWaiting()):
+            print "Remote:",ser.readline()
+        while True:
+            try:
+                s = raw_input(prompt)
+                if s == 'q':
+                    break
+                ac = echo(s,ac,ser)
+                print ac
+                saveState(ac)
+                while (ser.inWaiting()):
+                    print "Remote:",ser.readline()
+            except EOFError as e:
+                break
