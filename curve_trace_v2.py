@@ -26,6 +26,7 @@ VSenseThreshold = 1e-4
 showfmt = "{:>4} {:16} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}"
 showfieldfmt=showfmt.replace(".3f","")
 showfields = ("i","when","Vsrc","Vcell/mV","I/mA","P/uW","I_sc","Pmax")
+formelem=libkeithley6517b.defaultFormat
 
 # Where to open the file
 def getFilename(when):
@@ -46,18 +47,30 @@ def readConfig(config):
     VSourceLimit = config["VSourceLimit"]
     return Rsensor, Rbypass, VSourceLimit
 
+#Ignore the timestamp from the instrument, but attach computer time
 def sourceAndRead(inst,Vso):
     when = datetime.datetime.now()
     inst.write(":SOUR:VOLT {}".format(Vso))
-    response = map(libkeithley6517b.splitAndSwapNumUnit2,
-                   inst.query(":SENS:DATA:FRES?").strip().split(','))
+
+    # Don't do this.
     #units = tuple([b for a,b in response])
     #vals = tuple([a for a,b in response])
     #result = np.array(vals,
     #                  dtype={'names':units,'formats':[np.double]*len(units)})
-    result = dict(response)
-    Vread = result['VDC']
-    Vsrc = result['Vsrc']
+    
+    # This works if the time stamp is relative:
+    #response = map(libkeithley6517b.splitAndSwapNumUnit2,
+    #               inst.query(":SENS:DATA:FRES?").strip().split(','))
+    #result = dict(response)
+    #Vread = result['VDC']
+    #Vsrc = result['Vsrc']
+    
+    # This works if the time stamp is full (time, date):
+    raw = inst.query(":SENS:DATA:FRES?")
+    response = libkeithley6517b.parseRead(formelem,raw)
+    Vsrc = response.vso
+    Vread = response.reading
+    
     return when,Vsrc,Vread
 
 def loopy(inst,config,outputFile,show=False,showHeads=True):
@@ -66,7 +79,10 @@ def loopy(inst,config,outputFile,show=False,showHeads=True):
     # Configure measuring
     inst.write(":SENS:FUNC 'VOLT'")
     # Setup so that each record is like {}VDC,{}secs,{}RDNG#,{}Vsrc
-    inst.write(":FORM:ELEM READ,RNUM,UNIT,TST,VSO")
+    #inst.write(":FORM:ELEM READ,RNUM,UNIT,TST,VSO")
+    # Setup so that each record is like {}NVDC,{time},{date},{}RDNG#,{}Vsrc
+    inst.write(formelem.getFormatCommand())
+    
     # Turn off zero check
     inst.write(":SYST:ZCH 0")
     # Start measuring

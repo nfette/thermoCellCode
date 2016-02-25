@@ -125,7 +125,10 @@ Current, not all options for format flags are supported.
         #print aread, atime, adate, arnum, avso
         read,readunit = splitNumUnit(aread)
         read = float(read)
-        readstatus,readunit = readunit[0],readunit[1:]
+        if format_flags.STAT:
+            readstatus,readunit = readunit[0],readunit[1:]
+        else:
+            readstatus=''
         #print read, readstatus, readunit
         tstformat = "%H:%M:%S.%f,%d-%b-%Y"
         tst = datetime.datetime.strptime(atime + "," + adate, tstformat)
