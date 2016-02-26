@@ -51,7 +51,8 @@ if __name__ == "__main__":
             t_do = [t for t in dprog if t < now]
             for t in t_do:
                 line = dprog.pop(t)
-                
+                print t
+                print "Setpoints:"
                 print line["WacState"]
                 print line["relayA"]
                 print line["relayB"]
