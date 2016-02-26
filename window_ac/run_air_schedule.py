@@ -21,7 +21,7 @@ def runProgramLine(ac):
         print ac
 
 if __name__ == "__main__":
-    print "Usage: run_air_schedule.py [-live] schedule.json"
+    print "Usage: run_air_schedule.py schedule.json [-live] [code]"
     ac = loadState()
     serGen = openSerial if "-live" in sys.argv else openFake
     progfile = sys.argv[1]
@@ -32,8 +32,19 @@ if __name__ == "__main__":
         if line["time"] > now:
             dprog[line.pop("time")] = line
     del prog
-    
+
     with serGen() as ser:
+        time.sleep(5)
+        
+        if len(sys.argv) > 3:
+            s = sys.argv[3]
+            print ">", s
+            ac = echo(s,ac,ser)
+            saveState(ac)
+            time.sleep(1)
+        while (ser.inWaiting()):
+            print "Remote:",ser.readline()
+                
         while dprog:
             print "\b" * 80,
             now = datetime.datetime.now()
@@ -52,9 +63,10 @@ if __name__ == "__main__":
                 ac = echo(s,ac,ser)
                 saveState(ac)
                 print
-                
-                while (ser.inWaiting()):
-                    print "Remote:",ser.readline()
+
+                time.sleep(1)
+            while (ser.inWaiting()):
+                print "Remote:",ser.readline()
 
             if dprog:
                 keys=dprog.keys()

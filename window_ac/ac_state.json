@@ -1,1 +1,7 @@
-{"timer": 0, "fan": 1, "temp": 86, "power": true, "mode": "Fan"}
+{
+    "power": false,
+    "mode": "Energy Saver",
+    "fan": 1,
+    "temp": 86,
+    "timer": 0
+}

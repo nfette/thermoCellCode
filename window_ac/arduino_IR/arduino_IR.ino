@@ -85,7 +85,8 @@ void loop() {
         break;
       case 'b':
         digitalWrite(RELAYB_PIN, HIGH);
-        Serial.println("Sent 'on' to relay B.");
+        if (verbose)
+          Serial.println("Sent 'on' to relay B.");
         break;
       case 'A':
         digitalWrite(RELAYA_PIN, LOW);
@@ -112,7 +113,7 @@ void loop() {
         else
           Serial.print("off");
         Serial.print(" and Relay B is ");
-        if (digitalRead(RELAYA_PIN))
+        if (digitalRead(RELAYB_PIN))
           Serial.println("on.");
         else
           Serial.println("off.");
