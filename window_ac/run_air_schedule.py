@@ -73,6 +73,7 @@ if __name__ == "__main__":
                 keys=dprog.keys()
                 keys.sort()
                 print "time to next: ", keys[0] - now,
+                print "time to complete: ", keys[-1] - now,
                 time.sleep(0.1)
             else:
                 print "Program complete."
